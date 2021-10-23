@@ -1,3 +1,5 @@
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,12 +18,31 @@ public class Parser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Element divDividends = doc.getElementById("tblCombDiv_U3434582Body");
-        Elements tableDividends = divDividends.getElementsByClass("table-bordered");
-        Elements tbodyDividends = tableDividends.get(0).select("tbody");
-        Elements td = tbodyDividends.select("td");
-        Element test = td.get(0);
-        String currency = test.text();
+
+        ListMultimap<String, Element> dividends = ArrayListMultimap.create();
+        String currency = null;
+
+        Elements divDividends = doc.selectXpath("//div[starts-with(@id, 'tblChangeInDividend')]//table//tbody");
+        Elements trs = divDividends.select("tr");
+
+        for (Element tr:trs) {
+            if (!tr.attr("class").equals(""))
+                continue;
+            Elements tds = tr.select("td");
+            if (tds.get(0).attr("class").equals("header-asset"))
+                continue;
+            if (tds.get(0).attr("class").equals("header-currency")) {
+                currency = tds.get(0).ownText();
+                continue;
+            }
+            dividends.put(currency, tr);
+        }
+
+
+        Element test = trs.get(1);
+        Elements tds = test.select("td");
+        Element test1 = tds.get(0);
+        String currency1 = test.text();
 
 
     }
