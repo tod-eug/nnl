@@ -15,6 +15,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'commons-io:commons-io:2.11.0'
     implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
 }
 
 test {
