@@ -3,7 +3,7 @@ package dto;
 import java.util.Date;
 import java.util.UUID;
 
-public class Dividend {
+public class DividendRaw {
 
     private final UUID id;
     private final String currency;
@@ -19,18 +19,18 @@ public class Dividend {
     private final double dividendNet;
     private final String code;
 
-    public Dividend(String currency,
-                    String ticker,
-                    Date date,
-                    Date exDividendDate,
-                    Date paymentDate,
-                    int quantity,
-                    double tax,
-                    double payment,
-                    double divPerShare,
-                    double dividendGross,
-                    double dividendNet,
-                    String code) {
+    public DividendRaw(String currency,
+                       String ticker,
+                       Date date,
+                       Date exDividendDate,
+                       Date paymentDate,
+                       int quantity,
+                       double tax,
+                       double payment,
+                       double divPerShare,
+                       double dividendGross,
+                       double dividendNet,
+                       String code) {
         id = UUID.randomUUID();
         this.currency = currency;
         this.ticker = ticker;

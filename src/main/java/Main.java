@@ -1,5 +1,5 @@
 import controller.DividendController;
-import dto.Dividend;
+import dto.DividendRaw;
 import org.jsoup.nodes.Document;
 import parser.DividendParser;
 import util.DataProvider;
@@ -15,7 +15,7 @@ public class Main {
         Document doc = DataProvider.getDocument();
 
         //get list of dividends
-        ArrayList<Dividend> dividendList = DividendParser.parseDividends(doc);
+        ArrayList<DividendRaw> dividendList = DividendParser.parseDividends(doc);
 
         DividendController.calculateDivs(dividendList);
     }

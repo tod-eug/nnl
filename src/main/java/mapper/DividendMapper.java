@@ -1,6 +1,6 @@
 package mapper;
 
-import dto.Dividend;
+import dto.DividendRaw;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class DividendMapper {
 
-    public static Dividend mapDividend(String currency, Element element) {
+    public static DividendRaw mapDividend(String currency, Element element) {
         Elements tds = element.select("td");
 
         Date date = null;
@@ -32,7 +32,7 @@ public class DividendMapper {
         double dividendNet = Double.parseDouble(tds.get(9).ownText().replace(",", "").replace("-", ""));
 
 
-        return new Dividend(currency,
+        return new DividendRaw(currency,
                 tds.get(0).ownText(),
                 date,
                 exDividendDate,

@@ -2,7 +2,7 @@ package parser;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import dto.Dividend;
+import dto.DividendRaw;
 import mapper.DividendMapper;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class DividendParser {
 
-    public static ArrayList<Dividend> parseDividends(Document document) {
+    public static ArrayList<DividendRaw> parseDividends(Document document) {
 
         ListMultimap<String, Element> currencyRowMap = ArrayListMultimap.create();
         String currency = null;
@@ -38,7 +38,7 @@ public class DividendParser {
         }
 
         //map rows to dividends dto
-        ArrayList<Dividend> dividends = new ArrayList<>();
+        ArrayList<DividendRaw> dividends = new ArrayList<>();
         Set<String> currencies = currencyRowMap.keySet();
         for (String cur:currencies) {
             List<Element> dividendRows = currencyRowMap.get(cur);
