@@ -59,7 +59,9 @@ public class DividendController {
 
             if (result > 0) {
                 taxes.add(result);
-                listOfTaxes.add(new DividendCalculated(d.getTicker(), d.getPaymentDate(), dividendRub, expectedDividendRub, payedTaxRub, result));
+                listOfTaxes.add(new DividendCalculated(d.getTicker(), d.getPaymentDate(),
+                        grossDividend, d.getDividendNet(), payedTax,
+                        dividendRub, expectedDividendRub, payedTaxRub, result));
             }
         }
         System.out.println(taxes);
