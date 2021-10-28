@@ -1,6 +1,8 @@
 import controller.DividendController;
+import dto.DividendCalculated;
 import dto.DividendRaw;
 import org.jsoup.nodes.Document;
+import output.xlsx.XlsWriter;
 import parser.DividendParser;
 import util.DataProvider;
 
@@ -17,6 +19,10 @@ public class Main {
         //get list of dividends
         ArrayList<DividendRaw> dividendList = DividendParser.parseDividends(doc);
 
-        DividendController.calculateDivs(dividendList);
+        //calculate dividends
+        ArrayList<DividendCalculated> list = DividendController.calculateDivs(dividendList);
+
+        //write results in file
+        XlsWriter.writeXlsFile(list);
     }
 }

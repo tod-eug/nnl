@@ -34,7 +34,7 @@ public class DividendController {
 
     public static Double taxRate = 0.13;
 
-    public static void calculateDivs(ArrayList<DividendRaw> list) {
+    public static ArrayList<DividendCalculated> calculateDivs(ArrayList<DividendRaw> list) {
 
         ArrayList<Double> taxes = new ArrayList<>();
         ArrayList<DividendCalculated> listOfTaxes = new ArrayList<>();
@@ -64,8 +64,7 @@ public class DividendController {
                         dividendRub, expectedDividendRub, payedTaxRub, result));
             }
         }
-        System.out.println(taxes);
-
+        return listOfTaxes;
     }
 
 
