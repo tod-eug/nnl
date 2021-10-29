@@ -37,7 +37,7 @@ public class DividendParser {
             currencyRowMap.put(currency, tr);
         }
 
-        //map rows to dividends dto
+        //map rows to dividendsRaw dto
         ArrayList<DividendRaw> dividends = new ArrayList<>();
         Set<String> currencies = currencyRowMap.keySet();
         for (String cur:currencies) {
