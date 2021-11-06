@@ -1,6 +1,5 @@
 package util;
 
-import currency.CBRCurrencyCodesProvider;
 import okhttp3.HttpUrl;
 
 import java.net.URL;
@@ -24,7 +23,7 @@ public class UrlBuilder {
                 .addPathSegments("scripts/XML_dynamic.asp")
                 .addQueryParameter("date_req1", start)
                 .addQueryParameter("date_req2", end)
-                .addQueryParameter("VAL_NM_RQ", CBRCurrencyCodesProvider.getCurrencyCBRCode(currency))
+                .addQueryParameter("VAL_NM_RQ", currency)
                 .build().url();
         return url;
     }
