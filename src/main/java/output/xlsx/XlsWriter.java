@@ -17,8 +17,8 @@ public class XlsWriter {
     public static void writeXlsFile(ArrayList<DividendCalculated> list, Map<String, List<Trades>> trades) {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        DividendWriter.writeDividends(list, workbook);
-        TradesWriter.writeTrades(trades, workbook);
+        workbook = DividendWriter.writeDividends(list, workbook);
+        workbook = TradesWriter.writeTrades(trades, workbook);
 
         FileWriter.writeFile(workbook, fileName);
     }

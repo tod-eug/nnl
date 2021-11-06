@@ -54,7 +54,7 @@ public class Trades {
         return finalPLRub;
     }
 
-    public Double taxRub() {
+    public Double getTaxRub() {
         return taxRub;
     }
 
