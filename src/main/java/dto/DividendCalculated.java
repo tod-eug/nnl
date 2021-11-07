@@ -6,6 +6,7 @@ public class DividendCalculated {
 
     private final String ticker;
     private final Date paymentDate;
+    private final Double exchangeRate;
     private final Double dividendGross;
     private final Double dividendNet;
     private final Double tax;
@@ -16,6 +17,7 @@ public class DividendCalculated {
 
     public DividendCalculated(String ticker,
                               Date paymentDate,
+                              Double exchangeRate,
                               Double dividendGross,
                               Double dividendNet,
                               Double tax,
@@ -24,6 +26,7 @@ public class DividendCalculated {
                               Double payedTaxRub,
                               Double result) {
         this.ticker = ticker;
+        this.exchangeRate = exchangeRate;
         this.dividendGross = dividendGross;
         this.dividendNet = dividendNet;
         this.tax = tax;
@@ -68,5 +71,9 @@ public class DividendCalculated {
 
     public Double getTax() {
         return tax;
+    }
+
+    public Double getExchangeRate() {
+        return exchangeRate;
     }
 }

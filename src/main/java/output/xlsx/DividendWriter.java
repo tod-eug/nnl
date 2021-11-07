@@ -22,6 +22,7 @@ public class DividendWriter {
     private static final String expectedDividendRubColumnName = "Expected dividend rub";
     private static final String payedTaxRubColumnName = "Payed tax rub";
     private static final String resultColumnName = "Result";
+    private static final String exchangeRateColumnName = "Exchange rate";
 
 
     public static XSSFWorkbook writeDividends(ArrayList<DividendCalculated> list, XSSFWorkbook workbook) {
@@ -57,6 +58,8 @@ public class DividendWriter {
         cell8.setCellValue(payedTaxRubColumnName);
         Cell cell9 = row.createCell(++columnCount);
         cell9.setCellValue(resultColumnName);
+        Cell cell10 = row.createCell(++columnCount);
+        cell10.setCellValue(exchangeRateColumnName);
         rowCount++;
         return rowCount;
     }
@@ -66,6 +69,7 @@ public class DividendWriter {
             CellStylesProvider cellStylesProvider = new CellStylesProvider();
             CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
             CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
+            CellStyle exchangeRateCellStyle = cellStylesProvider.getExchangeRateCellStyle(workbook, sheet);
 
             int columnCount = 0;
             Row rowD = sheet.createRow(rowCount++);
@@ -95,6 +99,9 @@ public class DividendWriter {
             Cell cellD9 = rowD.createCell(++columnCount);
             cellD9.setCellStyle(doubleCellStyle);
             cellD9.setCellValue(d.getResult());
+            Cell cellD10 = rowD.createCell(++columnCount);
+            cellD10.setCellStyle(exchangeRateCellStyle);
+            cellD10.setCellValue(d.getExchangeRate());
         }
     }
 }
