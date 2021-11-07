@@ -31,10 +31,7 @@ public class DividendWriter {
 
         rowCount = setSheetHeader(sheet, rowCount);
 
-        CellStylesProvider cellStylesProvider = new CellStylesProvider();
-        CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
-        CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
-        writeDividends(workbook, sheet, list, rowCount, dateCellStyle, doubleCellStyle);
+        writeDividends(workbook, sheet, list, rowCount);
         XlsWriter.autoSizeColumn(sheet, 10);
         return workbook;
     }
@@ -64,9 +61,12 @@ public class DividendWriter {
         return rowCount;
     }
 
-    private static void writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount,
-                                       CellStyle dateCellStyle, CellStyle doubleCellStyle) {
+    private static void writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount) {
         for (DividendCalculated d : list) {
+            CellStylesProvider cellStylesProvider = new CellStylesProvider();
+            CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
+            CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
+
             int columnCount = 0;
             Row rowD = sheet.createRow(rowCount++);
             Cell cellD1 = rowD.createCell(columnCount);

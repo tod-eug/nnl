@@ -29,6 +29,7 @@ public class TradesWriter {
     private static final String realizedPLColumnName = "Realized PL";
     private static final String realizedPLRubColumnName = "Realized PL Rub";
     private static final String resultColumnName = "Result";
+    private static final String exchangeRateColumnName = "Exchange rate";
     private static final String finalPLColumnName = "Final PL:";
     private static final String taxRubColumnName = "Tax rub:";
     private static final String deductionRubColumnName = "Deduction:";
@@ -38,10 +39,6 @@ public class TradesWriter {
         XSSFSheet sheet = workbook.createSheet(listName);
 
         int rowCount = 0;
-
-        CellStylesProvider cellStylesProvider = new CellStylesProvider();
-        CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
-        CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
 
         Set<String> instruments = trades.keySet();
         for (String instrument : instruments) {
@@ -60,21 +57,21 @@ public class TradesWriter {
                 if (purchases.size() > 0) {
                     for (TradeCalculated tc : purchases) {
                         rowCount = setTradeHeader(sheet, rowCount);
-                        rowCount = writeTrade(sheet, tc, rowCount, dateCellStyle, doubleCellStyle);
+                        rowCount = writeTrade(workbook, sheet, tc, rowCount);
                         rowCount++;
                     }
                 }
                 if (sells.size() > 0) {
                     for (TradeCalculated tc : sells) {
                         rowCount = setTradeHeader(sheet, rowCount);
-                        rowCount = writeTrade(sheet, tc, rowCount, dateCellStyle, doubleCellStyle);
+                        rowCount = writeTrade(workbook, sheet, tc, rowCount);
                         rowCount++;
                     }
                 }
-                rowCount = writeResult(sheet, t, rowCount, doubleCellStyle);
+                rowCount = writeResult(workbook, sheet, t, rowCount);
             }
         }
-        XlsWriter.autoSizeColumn(sheet, 13);
+        XlsWriter.autoSizeColumn(sheet, 14);
         return workbook;
     }
 
@@ -125,12 +122,18 @@ public class TradesWriter {
         cell12.setCellValue(realizedPLRubColumnName);
         Cell cell13 = row.createCell(++columnCount);
         cell13.setCellValue(resultColumnName);
+        Cell cell14 = row.createCell(++columnCount);
+        cell14.setCellValue(exchangeRateColumnName);
         rowCount++;
         return rowCount;
     }
 
-    private static int writeTrade(XSSFSheet sheet, TradeCalculated t, int rowCount,
-                                   CellStyle dateCellStyle, CellStyle doubleCellStyle) {
+    private static int writeTrade(XSSFWorkbook workbook, XSSFSheet sheet, TradeCalculated t, int rowCount) {
+        CellStylesProvider cellStylesProvider = new CellStylesProvider();
+        CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
+        CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
+        CellStyle exchangeRateCellStyle = cellStylesProvider.getExchangeRateCellStyle(workbook, sheet);
+
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cellD1 = row.createCell(columnCount);
@@ -171,11 +174,17 @@ public class TradesWriter {
         Cell cellD13 = row.createCell(++columnCount);
         cellD13.setCellStyle(doubleCellStyle);
         cellD13.setCellValue(t.getResult());
+        Cell cellD14 = row.createCell(++columnCount);
+        cellD14.setCellStyle(exchangeRateCellStyle);
+        cellD14.setCellValue(t.getExchangeRate());
         rowCount++;
         return rowCount;
         }
 
-    public static int writeResult(XSSFSheet sheet, Trades t, int rowCount, CellStyle doubleCellStyle) {
+    public static int writeResult(XSSFWorkbook workbook, XSSFSheet sheet, Trades t, int rowCount) {
+        CellStylesProvider cellStylesProvider = new CellStylesProvider();
+        CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
+
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cell1 = row.createCell(columnCount);
