@@ -33,9 +33,9 @@ public class TradeCalculated {
                            Double sum,
                            Double sumRub,
                            Double commission,
+                           Double commissionRub,
                            Double basis,
                            Double basisRub,
-                           Double commissionRub,
                            Double realizedPL,
                            Double realizedPLRub,
                            Double result) {
