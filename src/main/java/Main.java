@@ -46,10 +46,12 @@ public class Main {
         trades.size();
 
         //get list of dividends
-        ArrayList<DividendRaw> dividendList = DividendParser.parseDividends(doc);
+        DividendParser dividendParser = new DividendParser();
+        ArrayList<DividendRaw> dividendList = dividendParser.parseDividends(doc);
 
         //calculate dividends
-        ArrayList<DividendCalculated> list = DividendController.calculateDivs(dividendList);
+        DividendController dividendController = new DividendController();
+        ArrayList<DividendCalculated> list = dividendController.calculateDivs(dividendList);
 
         //write results in file
         XlsWriter.writeXlsFile(list, trades);

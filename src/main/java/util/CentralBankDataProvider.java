@@ -10,11 +10,12 @@ import java.util.Date;
 
 public class CentralBankDataProvider {
 
-    public static InputStream getExchangeRatesRange(String currency, Date start, Date end) {
+    public InputStream getExchangeRatesRange(String currency, Date start, Date end) {
+        UrlBuilder urlBuilder = new UrlBuilder();
 
         OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url(UrlBuilder.getUrlForExchangeRates(currency, start, end))
+                    .url(urlBuilder.getUrlForExchangeRates(currency, start, end))
                     .build(); // defaults to GET
 
             Response response = null;

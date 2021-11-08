@@ -82,7 +82,8 @@ public class TaxBot extends TelegramLongPollingBot {
         trades.size();
 
         XSSFWorkbook workbook = new XSSFWorkbook();
-        workbook = TradesWriter.writeTrades(trades, workbook);
+        TradesWriter tradesWriter = new TradesWriter();
+        workbook = tradesWriter.writeTrades(trades, workbook);
 
         String fileName = UUID.randomUUID() + ".xlsx";
         try (FileOutputStream outputStream = new FileOutputStream(fileName)) {

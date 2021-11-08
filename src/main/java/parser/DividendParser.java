@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class DividendParser {
 
-    public static ArrayList<DividendRaw> parseDividends(Document document) {
+    public ArrayList<DividendRaw> parseDividends(Document document) {
 
         ListMultimap<String, Element> currencyRowMap = ArrayListMultimap.create();
         String currency = null;
@@ -38,12 +38,13 @@ public class DividendParser {
         }
 
         //map rows to dividendsRaw dto
+        DividendMapper dividendMapper = new DividendMapper();
         ArrayList<DividendRaw> dividends = new ArrayList<>();
         Set<String> currencies = currencyRowMap.keySet();
         for (String cur:currencies) {
             List<Element> dividendRows = currencyRowMap.get(cur);
             for (Element element:dividendRows) {
-                dividends.add(DividendMapper.mapDividend(cur, element));
+                dividends.add(dividendMapper.mapDividend(cur, element));
             }
         }
 

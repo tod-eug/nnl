@@ -35,7 +35,7 @@ public class DividendController {
 
     public static Double taxRate = 0.13;
 
-    public static ArrayList<DividendCalculated> calculateDivs(ArrayList<DividendRaw> list) {
+    public ArrayList<DividendCalculated> calculateDivs(ArrayList<DividendRaw> list) {
 
         ArrayList<Double> taxes = new ArrayList<>();
         ArrayList<DividendCalculated> listOfTaxes = new ArrayList<>();
@@ -46,7 +46,8 @@ public class DividendController {
         //get list of currencies
         List<String> currencies = getListOfCurrencies(list);
 
-        Map<String, Map<Date, ExchangeRate>> exchangeRates = ExchangeRatesProvider.getExchangeRates(currencies, datesRange);
+        ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
+        Map<String, Map<Date, ExchangeRate>> exchangeRates = exchangeRatesProvider.getExchangeRates(currencies, datesRange);
 
         //filter only real received dividends
         List<DividendRaw> filteredList = filterDividendList(list);
@@ -55,7 +56,7 @@ public class DividendController {
         for (DividendRaw d : filteredList) {
             Double grossDividend = d.getDividendGross();
             Double payedTax = d.getTax();
-            Date exchangeRateDate = ExchangeRatesProvider.adjustExchangeRateDate(d.getDate(), exchangeRates.get(d.getCurrency()));
+            Date exchangeRateDate = exchangeRatesProvider.adjustExchangeRateDate(d.getDate(), exchangeRates.get(d.getCurrency()));
             Double value = exchangeRates.get(d.getCurrency()).get(exchangeRateDate).getValue();
             int nominal = exchangeRates.get(d.getCurrency()).get(exchangeRateDate).getNominal();
 
@@ -75,7 +76,7 @@ public class DividendController {
     }
 
 
-    private static List<DividendRaw> filterDividendList(List<DividendRaw> list) {
+    private List<DividendRaw> filterDividendList(List<DividendRaw> list) {
         return list.stream()
                 .filter(dividendRaw -> dividendRaw.getCode().equals("Re"))
                 .filter(dividendRaw -> dividendRaw.getDate().equals(dividendRaw.getPaymentDate()))
@@ -92,7 +93,8 @@ public class DividendController {
      * - "to" with the latest date in the list
      * @return - map with range of dates
      */
-    private static Map<String, Date> getDatesRange(List<DividendRaw> list) {
+    private Map<String, Date> getDatesRange(List<DividendRaw> list) {
+        DateUtil dateUtil = new DateUtil();
         Map<String, Date> result = new HashMap<>();
         Date from = list.get(0).getDate();
         Date to = list.get(0).getDate();
@@ -102,7 +104,7 @@ public class DividendController {
             if (d.getDate().after(to))
                 to = d.getDate();
         }
-        from = DateUtil.increaseDate(from, -30);
+        from = dateUtil.increaseDate(from, -30);
         result.put("from", from);
         result.put("to", to);
         return result;
@@ -114,7 +116,7 @@ public class DividendController {
      * @param list - list of transactions
      * @return list of currencies
      */
-    private static List<String> getListOfCurrencies(List<DividendRaw> list) {
+    private List<String> getListOfCurrencies(List<DividendRaw> list) {
         List<String> currencies = new ArrayList<>();
         for (DividendRaw d : list) {
             if (currencies.contains(d.getCurrency()))

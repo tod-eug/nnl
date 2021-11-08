@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class UrlBuilder {
 
-    public static URL getUrlForExchangeRates(String currency, Date startDate, Date endDate) {
+    public URL getUrlForExchangeRates(String currency, Date startDate, Date endDate) {
 
         String pattern = "dd/MM/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);

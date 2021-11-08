@@ -25,7 +25,7 @@ public class DividendWriter {
     private static final String exchangeRateColumnName = "Exchange rate";
 
 
-    public static XSSFWorkbook writeDividends(ArrayList<DividendCalculated> list, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeDividends(ArrayList<DividendCalculated> list, XSSFWorkbook workbook) {
         XSSFSheet sheet = workbook.createSheet(listName);
 
         int rowCount = 0;
@@ -37,7 +37,7 @@ public class DividendWriter {
         return workbook;
     }
 
-    private static int setSheetHeader(XSSFSheet sheet, int rowCount) {
+    private int setSheetHeader(XSSFSheet sheet, int rowCount) {
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cell1 = row.createCell(columnCount);
@@ -64,7 +64,7 @@ public class DividendWriter {
         return rowCount;
     }
 
-    private static void writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount) {
+    private void writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount) {
         for (DividendCalculated d : list) {
             CellStylesProvider cellStylesProvider = new CellStylesProvider();
             CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);

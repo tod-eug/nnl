@@ -11,7 +11,7 @@ public class DateUtil {
      * @param days - amount of days to increase/decrease
      * @return result date
      */
-    public static Date increaseDate(Date date, int days) {
+    public Date increaseDate(Date date, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, days);
@@ -23,7 +23,7 @@ public class DateUtil {
      * @param date - base date
      * @return - date with 00:00:00.000
      */
-    public static Date removeTimeFromDate(Date date) {
+    public Date removeTimeFromDate(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 0);

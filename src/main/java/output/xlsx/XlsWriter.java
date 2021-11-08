@@ -16,11 +16,14 @@ public class XlsWriter {
 
     public static void writeXlsFile(ArrayList<DividendCalculated> list, Map<String, List<Trades>> trades) {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        DividendWriter dividendWriter = new DividendWriter();
+        TradesWriter tradesWriter = new TradesWriter();
+        FileWriter fileWriter = new FileWriter();
 
-        workbook = DividendWriter.writeDividends(list, workbook);
-        workbook = TradesWriter.writeTrades(trades, workbook);
+        workbook = dividendWriter.writeDividends(list, workbook);
+        workbook = tradesWriter.writeTrades(trades, workbook);
 
-        FileWriter.writeFile(workbook, fileName);
+        fileWriter.writeFile(workbook, fileName);
     }
 
     public static void autoSizeColumn(XSSFSheet sheet, int length) {

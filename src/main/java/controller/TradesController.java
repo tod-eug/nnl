@@ -47,7 +47,8 @@ public class TradesController {
         //get list of currencies
         List<String> currencies = getListOfCurrencies(list);
 
-        Map<String, Map<Date, ExchangeRate>> exchangeRates = ExchangeRatesProvider.getExchangeRates(currencies, datesRange);
+        ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
+        Map<String, Map<Date, ExchangeRate>> exchangeRates = exchangeRatesProvider.getExchangeRates(currencies, datesRange);
 
 
         //filter only code = C or code = O
@@ -122,12 +123,14 @@ public class TradesController {
      * @return - TradeCalculated object
      */
     private TradeCalculated calculate(Map<String, Map<Date, ExchangeRate>> exchangeRates, TradeRaw t, Boolean sales) {
+        DateUtil dateUtil = new DateUtil();
+        ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
         Double sum = t.getSum();
         Double commission = t.getCommission();
         Double realizedPL = t.getRealizedPL();
         Double basis = t.getBasis();
-        Date justDate = DateUtil.removeTimeFromDate(t.getDate());
-        Date exchangeRateDate = ExchangeRatesProvider.adjustExchangeRateDate(justDate, exchangeRates.get(t.getCurrency()));
+        Date justDate = dateUtil.removeTimeFromDate(t.getDate());
+        Date exchangeRateDate = exchangeRatesProvider.adjustExchangeRateDate(justDate, exchangeRates.get(t.getCurrency()));
         Double value = exchangeRates.get(t.getCurrency()).get(exchangeRateDate).getValue();
         int nominal = exchangeRates.get(t.getCurrency()).get(exchangeRateDate).getNominal();
 
@@ -192,7 +195,8 @@ public class TradesController {
      * - "to" with the latest date in the list
      * @return - map with range of dates
      */
-    private static Map<String, Date> getDatesRange(List<TradeRaw> list) {
+    private Map<String, Date> getDatesRange(List<TradeRaw> list) {
+        DateUtil dateUtil = new DateUtil();
         Map<String, Date> result = new HashMap<>();
         Date from = list.get(0).getDate();
         Date to = list.get(0).getDate();
@@ -202,7 +206,7 @@ public class TradesController {
             if (d.getDate().after(to))
                 to = d.getDate();
         }
-        from = DateUtil.increaseDate(from, -30);
+        from = dateUtil.increaseDate(from, -30);
         result.put("from", from);
         result.put("to", to);
         return result;
@@ -214,7 +218,7 @@ public class TradesController {
      * @param list - list of transactions
      * @return list of currencies
      */
-    private static List<String> getListOfCurrencies(List<TradeRaw> list) {
+    private List<String> getListOfCurrencies(List<TradeRaw> list) {
         List<String> currencies = new ArrayList<>();
         for (TradeRaw d : list) {
             if (currencies.contains(d.getCurrency()))

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class FileWriter {
 
-    public static void writeFile(XSSFWorkbook workbook, String fileName) {
+    public void writeFile(XSSFWorkbook workbook, String fileName) {
         try (FileOutputStream outputStream = new FileOutputStream(fileName)) {
             workbook.write(outputStream);
         } catch (IOException e) {

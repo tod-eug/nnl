@@ -35,7 +35,7 @@ public class TradesWriter {
     private static final String deductionRubColumnName = "Deduction:";
 
 
-    public static XSSFWorkbook writeTrades(Map<String, List<Trades>> trades, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeTrades(Map<String, List<Trades>> trades, XSSFWorkbook workbook) {
         XSSFSheet sheet = workbook.createSheet(listName);
 
         int rowCount = 0;
@@ -75,7 +75,7 @@ public class TradesWriter {
         return workbook;
     }
 
-    private static int setInstrumentHeader(XSSFSheet sheet, String instrumentName, int rowCount) {
+    private int setInstrumentHeader(XSSFSheet sheet, String instrumentName, int rowCount) {
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cell1 = row.createCell(columnCount);
@@ -84,7 +84,7 @@ public class TradesWriter {
         return rowCount;
     }
 
-    private static int setTickerHeader(XSSFSheet sheet, String tickerName, int rowCount) {
+    private int setTickerHeader(XSSFSheet sheet, String tickerName, int rowCount) {
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cell1 = row.createCell(columnCount);
@@ -93,7 +93,7 @@ public class TradesWriter {
         return rowCount;
     }
 
-    private static int setTradeHeader(XSSFSheet sheet, int rowCount) {
+    private int setTradeHeader(XSSFSheet sheet, int rowCount) {
         int columnCount = 0;
         Row row = sheet.createRow(rowCount);
         Cell cell1 = row.createCell(columnCount);
@@ -128,7 +128,7 @@ public class TradesWriter {
         return rowCount;
     }
 
-    private static int writeTrade(XSSFWorkbook workbook, XSSFSheet sheet, TradeCalculated t, int rowCount) {
+    private int writeTrade(XSSFWorkbook workbook, XSSFSheet sheet, TradeCalculated t, int rowCount) {
         CellStylesProvider cellStylesProvider = new CellStylesProvider();
         CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
         CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
@@ -181,7 +181,7 @@ public class TradesWriter {
         return rowCount;
         }
 
-    public static int writeResult(XSSFWorkbook workbook, XSSFSheet sheet, Trades t, int rowCount) {
+    public int writeResult(XSSFWorkbook workbook, XSSFSheet sheet, Trades t, int rowCount) {
         CellStylesProvider cellStylesProvider = new CellStylesProvider();
         CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
 

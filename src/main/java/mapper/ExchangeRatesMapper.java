@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class ExchangeRatesMapper {
 
-    public static ExchangeRate mapExchangeRate(Element element) {
+    public ExchangeRate mapExchangeRate(Element element) {
         Date date = null;
         try {
             date = new SimpleDateFormat("dd.MM.yyyy").parse(element.getAttribute("Date"));

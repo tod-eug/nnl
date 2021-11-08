@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class DividendMapper {
 
-    public static DividendRaw mapDividend(String currency, Element element) {
+    public DividendRaw mapDividend(String currency, Element element) {
         Elements tds = element.select("td");
 
         Date date = null;

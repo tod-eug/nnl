@@ -23,7 +23,7 @@ public class ExchangeRatesProvider {
      * @param datesRange - range of the dates for which we need exchange rates for all currencies
      * @return map with exchange rates for all currencies
      */
-    public static Map<String, Map<Date, ExchangeRate>> getExchangeRates(List<String> currencies, Map<String, Date> datesRange) {
+    public Map<String, Map<Date, ExchangeRate>> getExchangeRates(List<String> currencies, Map<String, Date> datesRange) {
         Map<String, Map<Date, ExchangeRate>> exchangeRates = new HashMap<>();
 
         for (String l: currencies) {
@@ -41,13 +41,14 @@ public class ExchangeRatesProvider {
      * @param rates - map with exchange rates
      * @return adjusted date, which guaranteed present in the map
      */
-    public static Date adjustExchangeRateDate(Date necessaryDate, Map<Date, ExchangeRate> rates)  {
+    public Date adjustExchangeRateDate(Date necessaryDate, Map<Date, ExchangeRate> rates)  {
+        DateUtil dateUtil = new DateUtil();
         int timer = 0;
         while (!rates.containsKey(necessaryDate)) {
             timer++;
-            necessaryDate = DateUtil.increaseDate(necessaryDate, -1);
+            necessaryDate = dateUtil.increaseDate(necessaryDate, -1);
             if (timer > 15)
-                return DateUtil.increaseDate(necessaryDate, timer+1);
+                return dateUtil.increaseDate(necessaryDate, timer+1);
         }
         return necessaryDate;
     }
@@ -59,14 +60,15 @@ public class ExchangeRatesProvider {
      * @param end - end date
      * @return - XML Document
      */
-    private static Document requestExchangeRates(String currency, Date start, Date end) {
+    private Document requestExchangeRates(String currency, Date start, Date end) {
+        CentralBankDataProvider centralBankDataProvider = new CentralBankDataProvider();
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
         Document doc = null;
 
         try {
             dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(CentralBankDataProvider.getExchangeRatesRange(CBRCurrencyCodesProvider.getCurrencyCBRCode(currency), start, end));
+            doc = dBuilder.parse(centralBankDataProvider.getExchangeRatesRange(CBRCurrencyCodesProvider.getCurrencyCBRCode(currency), start, end));
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
@@ -80,7 +82,7 @@ public class ExchangeRatesProvider {
      * @param doc - XML Document for parsing
      * @return - map with key Date and value exchangeRate from this document
      */
-    private static Map<Date, ExchangeRate> parseDocument(Document doc) {
+    private Map<Date, ExchangeRate> parseDocument(Document doc) {
 
         Map<Date, ExchangeRate> result = new HashMap<>();
 
@@ -92,8 +94,9 @@ public class ExchangeRatesProvider {
         NodeList nodelist = root.getElementsByTagName("Record");
 
         //map to the ExchangeRate dto
+        ExchangeRatesMapper exchangeRatesMapper = new ExchangeRatesMapper();
         for (int i = 0; i < nodelist.getLength(); i++) {
-            ExchangeRate exchangeRate = ExchangeRatesMapper.mapExchangeRate((Element) nodelist.item(i));
+            ExchangeRate exchangeRate = exchangeRatesMapper.mapExchangeRate((Element) nodelist.item(i));
             result.put(exchangeRate.getDate(), exchangeRate);
         }
         return result;
