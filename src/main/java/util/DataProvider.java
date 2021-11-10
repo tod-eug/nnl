@@ -8,8 +8,7 @@ import java.io.IOException;
 
 public class DataProvider {
 
-    public static Document getDocument() {
-        File file = new File("U3434582.htm");
+    public static Document getDocument(File file) {
         Document doc = null;
         try {
             doc = Jsoup.parse(file, "UTF-8", "");
