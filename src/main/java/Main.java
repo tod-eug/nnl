@@ -54,6 +54,6 @@ public class Main {
         ArrayList<DividendCalculated> list = dividendController.calculateDivs(dividendList);
 
         //write results in file
-        XlsWriter.writeXlsFile(list, trades);
+        XlsWriter.writeXlsFile(list, trades, "Taxes.xlsx");
     }
 }

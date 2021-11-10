@@ -12,9 +12,7 @@ import java.util.Map;
 
 public class XlsWriter {
 
-    private static final String fileName = "Taxes.xlsx";
-
-    public static void writeXlsFile(ArrayList<DividendCalculated> list, Map<String, List<Trades>> trades) {
+    public static void writeXlsFile(ArrayList<DividendCalculated> list, Map<String, List<Trades>> trades, String fileName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         DividendWriter dividendWriter = new DividendWriter();
         TradesWriter tradesWriter = new TradesWriter();
