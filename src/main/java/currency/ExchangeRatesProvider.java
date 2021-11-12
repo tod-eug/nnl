@@ -25,6 +25,24 @@ public class ExchangeRatesProvider {
      */
     public Map<String, Map<Date, ExchangeRate>> getExchangeRates(List<String> currencies, Map<String, Date> datesRange) {
         Map<String, Map<Date, ExchangeRate>> exchangeRates = new HashMap<>();
+//        Date from = datesRange.get("from");
+//        Date to = datesRange.get("to");
+//
+//        Calendar start = Calendar.getInstance();
+//        start.setTime(from);
+//        Calendar end = Calendar.getInstance();
+//        end.setTime(to);
+//
+//        for (String l: currencies) {
+//
+//            while(!start.after(end)){
+//                Date targetDay = start.getTime();
+//
+//                Document doc = requestExchangeRates(l, targetDay, targetDay);
+//                exchangeRates.put(l, parseDocument(doc));
+//            }
+//        }
+
 
         for (String l: currencies) {
             Document doc = requestExchangeRates(l, datesRange.get("from"), datesRange.get("to"));

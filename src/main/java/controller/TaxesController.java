@@ -1,5 +1,6 @@
 package controller;
 
+import db.DocumentsHelper;
 import dto.DividendCalculated;
 import dto.DividendRaw;
 import dto.TradeRaw;
@@ -9,6 +10,7 @@ import output.xlsx.XlsWriter;
 import parser.DividendParser;
 import parser.TradesParser;
 import util.DataProvider;
+import util.FilesUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,10 +20,19 @@ import java.util.UUID;
 
 public class TaxesController {
 
-    public File getCalculatedTaxes(File gotFile) {
+    public File getCalculatedTaxes(String userId, File gotFile) {
+
+        FilesUtils fileUtils = new FilesUtils();
+        DocumentsHelper dHelper = new DocumentsHelper();
+
+        //save raw file
+        String uuidRawFile = UUID.randomUUID().toString();
+        String rawFileName = uuidRawFile + ".htm";
+        File rawFile = fileUtils.saveRawFile(gotFile, rawFileName);
+        dHelper.createRawDocument(uuidRawFile, userId, rawFileName);
 
         //get document
-        Document doc = DataProvider.getDocument(gotFile);
+        Document doc = DataProvider.getDocument(rawFile);
 
         //get list of trades
         TradesParser tradesParser = new TradesParser();
@@ -39,13 +50,11 @@ public class TaxesController {
         DividendController dividendController = new DividendController();
         ArrayList<DividendCalculated> list = dividendController.calculateDivs(dividendList);
 
-        //write results in file
-        File dir = new File("processed");
-        boolean isCreated = dir.mkdirs();
-        String fileName = "processed/" + UUID.randomUUID() + ".xlsx";
-
-        XlsWriter.writeXlsFile(list, trades, fileName);
-        File file = new File(fileName);
+        //write results in file and save file
+        String uuidProcessedFile = UUID.randomUUID().toString();
+        String processedFileName = uuidProcessedFile + ".xlsx";
+        File file = XlsWriter.writeXlsFile(list, trades, processedFileName);
+        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
 }

@@ -1,6 +1,7 @@
 package bot;
 
 import controller.TaxesController;
+import db.UsersHelper;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -33,6 +34,26 @@ public class TaxBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            if (update.getMessage().getText().startsWith("/start")) {
+                UsersHelper uh = new UsersHelper();
+                String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString());
+                if (userId.equals(""))
+                    userId = uh.createUser(update.getMessage().getFrom().getId().toString(),
+                            update.getMessage().getFrom().getUserName(),
+                            update.getMessage().getFrom().getFirstName(),
+                            update.getMessage().getFrom().getLastName(),
+                            update.getMessage().getFrom().getIsBot(),
+                            update.getMessage().getFrom().getLanguageCode());
+                String response = "Добро пожаловать!";
+                SendMessage message = new SendMessage();
+                message.setChatId(update.getMessage().getChatId().toString());
+                message.setText(response);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
             String response = "Для старта расчета просто пришли мне отчет Interactive Brokers в формате htm";
             SendMessage message = new SendMessage();
             message.setChatId(update.getMessage().getChatId().toString());
@@ -45,6 +66,15 @@ public class TaxBot extends TelegramLongPollingBot {
         }
 
         if (update.getMessage().hasDocument()) {
+            UsersHelper uh = new UsersHelper();
+            String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString());
+            if (userId.equals(""))
+                userId = uh.createUser(update.getMessage().getFrom().getId().toString(),
+                        update.getMessage().getFrom().getUserName(),
+                        update.getMessage().getFrom().getFirstName(),
+                        update.getMessage().getFrom().getLastName(),
+                        update.getMessage().getFrom().getIsBot(),
+                        update.getMessage().getFrom().getLanguageCode());
             String uploadedFilePath = getFilePath(update);
             File gotFile = getFile(uploadedFilePath);
 
@@ -62,7 +92,7 @@ public class TaxBot extends TelegramLongPollingBot {
                 }
                 //calculations
                 TaxesController taxesController = new TaxesController();
-                File file = taxesController.getCalculatedTaxes(gotFile);
+                File file = taxesController.getCalculatedTaxes(userId, gotFile);
                 InputFile inputFile = new InputFile(file);
 
                 SendDocument document = new SendDocument();
