@@ -6,6 +6,8 @@ import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class DividendMapper {
@@ -16,6 +18,7 @@ public class DividendMapper {
         Date date = null;
         Date exDividendDate = null;
         Date paymentDate = null;
+        ArrayList<String> code;
         try {
             date = new SimpleDateFormat("yyyy-MM-dd").parse(tds.get(1).ownText());
             exDividendDate = new SimpleDateFormat("yyyy-MM-dd").parse(tds.get(2).ownText());
@@ -30,6 +33,7 @@ public class DividendMapper {
         double divPerShare = Double.parseDouble(tds.get(7).ownText().replace(",", ""));
         double dividendGross = Double.parseDouble(tds.get(8).ownText().replace(",", "").replace("-", ""));
         double dividendNet = Double.parseDouble(tds.get(9).ownText().replace(",", "").replace("-", ""));
+        code = new ArrayList<>(Arrays.asList(tds.get(10).ownText().split(";")));
 
 
         return new DividendRaw(currency,
@@ -43,6 +47,6 @@ public class DividendMapper {
                 divPerShare,
                 dividendGross,
                 dividendNet,
-                tds.get(10).ownText());
+                code);
     }
 }

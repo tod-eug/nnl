@@ -1,5 +1,6 @@
 package dto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public class DividendRaw {
     private final double divPerShare;
     private final double dividendGross;
     private final double dividendNet;
-    private final String code;
+    private final ArrayList<String> code;
 
     public DividendRaw(String currency,
                        String ticker,
@@ -30,7 +31,7 @@ public class DividendRaw {
                        double divPerShare,
                        double dividendGross,
                        double dividendNet,
-                       String code) {
+                       ArrayList<String> code) {
         id = UUID.randomUUID();
         this.currency = currency;
         this.ticker = ticker;
@@ -90,7 +91,7 @@ public class DividendRaw {
         return dividendNet;
     }
 
-    public String getCode() {
+    public ArrayList<String> getCode() {
         return code;
     }
 

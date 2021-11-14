@@ -82,7 +82,7 @@ public class DividendController {
 
     private List<DividendRaw> filterDividendList(List<DividendRaw> list) {
         return list.stream()
-                .filter(dividendRaw -> dividendRaw.getCode().equals("Re"))
+                .filter(dividendRaw -> dividendRaw.getCode().contains("Re"))
                 .filter(dividendRaw -> dividendRaw.getDate().equals(dividendRaw.getPaymentDate()))
                 .collect(Collectors.toList());
     }
