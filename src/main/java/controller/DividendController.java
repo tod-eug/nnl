@@ -55,7 +55,11 @@ public class DividendController {
         //calculate
         for (DividendRaw d : filteredList) {
             Double grossDividend = d.getDividendGross();
-            Double payedTax = d.getTax();
+            Double payedTax = 0.0;
+            if (d.getTax() != 0.0)
+                payedTax = d.getTax();
+            else
+                payedTax = d.getPayment();
             Date exchangeRateDate = exchangeRatesProvider.adjustExchangeRateDate(d.getDate(), exchangeRates.get(d.getCurrency()));
             Double value = exchangeRates.get(d.getCurrency()).get(exchangeRateDate).getValue();
             int nominal = exchangeRates.get(d.getCurrency()).get(exchangeRateDate).getNominal();

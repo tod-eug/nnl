@@ -26,7 +26,7 @@ public class DividendMapper {
 
         int quantity = Integer.parseInt(tds.get(4).ownText().replace(",", ""));
         double tax = Double.parseDouble(tds.get(5).ownText().replace(",", "").replace("-", ""));
-        double payment = Double.parseDouble(tds.get(6).ownText().replace(",", ""));
+        double payment = Double.parseDouble(tds.get(6).ownText().replace(",", "").replace("-", ""));
         double divPerShare = Double.parseDouble(tds.get(7).ownText().replace(",", ""));
         double dividendGross = Double.parseDouble(tds.get(8).ownText().replace(",", "").replace("-", ""));
         double dividendNet = Double.parseDouble(tds.get(9).ownText().replace(",", "").replace("-", ""));

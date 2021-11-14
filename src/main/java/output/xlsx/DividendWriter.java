@@ -19,7 +19,7 @@ public class DividendWriter {
     private static final String dividendNetColumnName = "Dividend net";
     private static final String taxColumnName = "Tax";
     private static final String dividendRubColumnName = "Dividend rub";
-    private static final String expectedDividendRubColumnName = "Expected dividend rub";
+    private static final String expectedDividendRubColumnName = "Expected tax rub";
     private static final String payedTaxRubColumnName = "Payed tax rub";
     private static final String resultColumnName = "Result";
     private static final String exchangeRateColumnName = "Exchange rate";
