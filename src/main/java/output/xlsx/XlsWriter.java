@@ -22,7 +22,7 @@ public class XlsWriter {
         workbook = dividendWriter.writeDividends(list, workbook);
         workbook = tradesWriter.writeTrades(trades, workbook);
 
-        File file = fileUtils.writeFile(workbook, fileName);
+        File file = fileUtils.writeXlsFile(workbook, fileName);
         return file;
     }
 

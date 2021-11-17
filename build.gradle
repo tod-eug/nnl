@@ -20,6 +20,8 @@ dependencies {
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9'
     implementation 'org.telegram:telegrambots:5.4.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
 }
 
 test {

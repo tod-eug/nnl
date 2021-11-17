@@ -1,5 +1,6 @@
 package util;
 
+import com.itextpdf.text.Document;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -24,7 +25,7 @@ public class FilesUtils {
         return copied;
     }
 
-    public File writeFile(XSSFWorkbook workbook, String fileName) {
+    public File writeXlsFile(XSSFWorkbook workbook, String fileName) {
         File dir = new File(processedFolder);
         boolean isCreated = dir.mkdirs();
         try (FileOutputStream outputStream = new FileOutputStream(processedFolder + fileName)) {
@@ -32,6 +33,13 @@ public class FilesUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File file = new File(processedFolder + fileName);
+        return file;
+    }
+
+    public File writePdfFile(String fileName) {
+        File dir = new File(processedFolder);
+        boolean isCreated = dir.mkdirs();
         File file = new File(processedFolder + fileName);
         return file;
     }

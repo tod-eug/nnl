@@ -6,6 +6,7 @@ import dto.DividendRaw;
 import dto.TradeRaw;
 import dto.Trades;
 import org.jsoup.nodes.Document;
+import output.pdf.TPdfWriter;
 import output.xlsx.XlsWriter;
 import parser.DividendParser;
 import parser.TradesParser;
@@ -52,8 +53,10 @@ public class TaxesController {
 
         //write results in file and save file
         String uuidProcessedFile = UUID.randomUUID().toString();
-        String processedFileName = uuidProcessedFile + ".xlsx";
-        File file = XlsWriter.writeXlsFile(list, trades, processedFileName);
+        String processedFileName = uuidProcessedFile + ".pdf";
+        TPdfWriter tPdfWriter = new TPdfWriter();
+//        File file = XlsWriter.writeXlsFile(list, trades, processedFileName);
+        File file = tPdfWriter.writePdfFile(list, trades, processedFileName);
         dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
