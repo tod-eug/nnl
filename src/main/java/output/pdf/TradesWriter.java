@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 
 public class TradesWriter {
 
-    private static final int numberOfColumns = 10;
-    private static final int resultHeaderColSpan = 7;
+    private static final int numberOfColumns = 9;
+    private static final int resultHeaderColSpan = 4;
 
     private static final String dateColumnName = "Date";
     private static final String quantityColumnName = "Quantity";
@@ -25,7 +25,6 @@ public class TradesWriter {
     private static final String sumRubColumnName = "Sum rub";
     private static final String commissionColumnName = "Commission";
     private static final String commissionRubColumnName = "Commission rub";
-    private static final String resultColumnName = "Result";
     private static final String currencyColumnName = "Currency";
     private static final String exchangeRateColumnName = "Exchange rate";
     private static final String finalPLColumnName = "Final PL:";
@@ -37,7 +36,7 @@ public class TradesWriter {
         document.newPage();
         Chunk chunk = new Chunk("Tax calculation, Trades", font);
 
-        PdfPTable table = new PdfPTable(new float[] { 1.3f, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
+        PdfPTable table = new PdfPTable(new float[] { 1.3f, 1, 1, 1, 1, 1, 1, 1, 1 });
         table.setWidthPercentage(100);
 
 
@@ -50,25 +49,28 @@ public class TradesWriter {
             List<Trades> list = trades.get(instrument);
 
             for (Trades t : list) {
-                addTickerHeader(table, t.getTicker());
-                addTableHeader(table);
-
                 List<TradeCalculated> purchases = t.getPurchases();
                 List<TradeCalculated> sells = t.getSells();
 
-                if (purchases.size() > 0) {
-                    for (TradeCalculated tc : purchases) {
-                        addRows(table, tc);
-                    }
-                }
+                //if position was reduced or closed then do something, otherwise ignore trades with this equity
                 if (sells.size() > 0) {
-                    for (TradeCalculated tc : sells) {
-                        addRows(table, tc);
+                    addTickerHeader(table, t.getTicker());
+                    addTableHeader(table);
+
+                    if (purchases.size() > 0) {
+                        for (TradeCalculated tc : purchases) {
+                            addRows(table, tc);
+                        }
                     }
+                    if (sells.size() > 0) {
+                        for (TradeCalculated tc : sells) {
+                            addRows(table, tc);
+                        }
+                    }
+                    addEmptyRow(table);
+                    writeResult(table, t);
+                    addEmptyRow(table);
                 }
-                addEmptyRow(table);
-                writeResult(table, t);
-                addEmptyRow(table);
             }
         }
 
@@ -104,7 +106,7 @@ public class TradesWriter {
     private void addTableHeader(PdfPTable table) {
         CellsProvider cellsProvider = new CellsProvider();
         Stream.of(dateColumnName, quantityColumnName, tradePriceColumnName, sumColumnName,
-                        sumRubColumnName, commissionColumnName, commissionRubColumnName, resultColumnName,
+                        sumRubColumnName, commissionColumnName, commissionRubColumnName,
                         currencyColumnName, exchangeRateColumnName)
                 .forEach(columnTitle -> {
                     PdfPCell header = cellsProvider.getTradeHeaderCell(columnTitle);
@@ -124,7 +126,6 @@ public class TradesWriter {
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getSumRub())));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getCommission())));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getCommissionRub())));
-            table.addCell(cellsProvider.getRowDataCell(df.format(tc.getResult())));
             table.addCell(cellsProvider.getRowDataCell(tc.getCurrency()));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getExchangeRate())));
     }

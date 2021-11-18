@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class TradesWriter {
 
+    private static final int numberOfColumns = 13;
+
     private static final String listName = "Trades";
 
     private static final String tickerColumnName = "Ticker";
@@ -28,7 +30,6 @@ public class TradesWriter {
     private static final String basisRubColumnName = "Basis rub";
     private static final String realizedPLColumnName = "Realized PL";
     private static final String realizedPLRubColumnName = "Realized PL Rub";
-    private static final String resultColumnName = "Result";
     private static final String exchangeRateColumnName = "Exchange rate";
     private static final String finalPLColumnName = "Final PL:";
     private static final String taxRubColumnName = "Tax rub:";
@@ -49,29 +50,32 @@ public class TradesWriter {
             List<Trades> list = trades.get(instrument);
 
             for (Trades t : list) {
-                rowCount = setTickerHeader(sheet, t.getTicker(), rowCount);
-
                 List<TradeCalculated> purchases = t.getPurchases();
                 List<TradeCalculated> sells = t.getSells();
 
-                if (purchases.size() > 0) {
-                    for (TradeCalculated tc : purchases) {
-                        rowCount = setTradeHeader(sheet, rowCount);
-                        rowCount = writeTrade(workbook, sheet, tc, rowCount);
-                        rowCount++;
-                    }
-                }
+                //if position was reduced or closed then do something, otherwise ignore trades with this equity
                 if (sells.size() > 0) {
-                    for (TradeCalculated tc : sells) {
-                        rowCount = setTradeHeader(sheet, rowCount);
-                        rowCount = writeTrade(workbook, sheet, tc, rowCount);
-                        rowCount++;
+                    rowCount = setTickerHeader(sheet, t.getTicker(), rowCount);
+
+                    if (purchases.size() > 0) {
+                        for (TradeCalculated tc : purchases) {
+                            rowCount = setTradeHeader(sheet, rowCount);
+                            rowCount = writeTrade(workbook, sheet, tc, rowCount);
+                            rowCount++;
+                        }
                     }
+                    if (sells.size() > 0) {
+                        for (TradeCalculated tc : sells) {
+                            rowCount = setTradeHeader(sheet, rowCount);
+                            rowCount = writeTrade(workbook, sheet, tc, rowCount);
+                            rowCount++;
+                        }
+                    }
+                    rowCount = writeResult(workbook, sheet, t, rowCount);
                 }
-                rowCount = writeResult(workbook, sheet, t, rowCount);
             }
         }
-        XlsWriter.autoSizeColumn(sheet, 14);
+        XlsWriter.autoSizeColumn(sheet, numberOfColumns);
         return workbook;
     }
 
@@ -120,8 +124,6 @@ public class TradesWriter {
         cell11.setCellValue(realizedPLColumnName);
         Cell cell12 = row.createCell(++columnCount);
         cell12.setCellValue(realizedPLRubColumnName);
-        Cell cell13 = row.createCell(++columnCount);
-        cell13.setCellValue(resultColumnName);
         Cell cell14 = row.createCell(++columnCount);
         cell14.setCellValue(exchangeRateColumnName);
         rowCount++;
@@ -171,9 +173,6 @@ public class TradesWriter {
         Cell cell12 = row.createCell(++columnCount);
         cell12.setCellStyle(doubleCellStyle);
         cell12.setCellValue(t.getRealizedPLRub());
-        Cell cell13 = row.createCell(++columnCount);
-        cell13.setCellStyle(doubleCellStyle);
-        cell13.setCellValue(t.getResult());
         Cell cell14 = row.createCell(++columnCount);
         cell14.setCellStyle(exchangeRateCellStyle);
         cell14.setCellValue(t.getExchangeRate());
