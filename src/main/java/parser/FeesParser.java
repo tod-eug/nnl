@@ -50,7 +50,6 @@ public class FeesParser {
                     fees.add(feesMapper.mapFees(cur, element));
                 }
             }
-            return fees;
         }
         return fees;
     }

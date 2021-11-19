@@ -37,80 +37,73 @@ public class TradesController {
 
     public static Double taxRate = 0.13;
 
-    public Map<String, List<Trades>> calculateTrades(List<TradeRaw> list) {
+    public Map<String, List<Trades>> calculateTrades(List<TradeRaw> list, Map<String, Map<Date, ExchangeRate>> exchangeRates) {
 
         Map<String, List<Trades>> result = new HashMap<>();
 
-        //get range of dates from list
-        Map<String, Date> datesRange = getDatesRange(list);
+        if (list.size() > 0) {
 
-        //get list of currencies
-        List<String> currencies = getListOfCurrencies(list);
+            //filter only code = C or code = O
+            list = filterOnlyTrades(list);
 
-        ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
-        Map<String, Map<Date, ExchangeRate>> exchangeRates = exchangeRatesProvider.getExchangeRates(currencies, datesRange);
-
-
-        //filter only code = C or code = O
-        list = filterOnlyTrades(list);
-
-        //get set of instruments
-        Set<String> instruments = new HashSet<>();
-        for (TradeRaw t : list) {
-            instruments.add(t.getInstrument());
-        }
-        for (String instrument : instruments) {
-            List<Trades> trades = new ArrayList<>();
-
-            //filter instruments
-            List<TradeRaw> instrumentsFiltered = filterTradesByInstruments(list, instrument);
-
-            //get set of tickers
-            Set<String> tickers = new HashSet<>();
-            for (TradeRaw t : instrumentsFiltered) {
-                tickers.add(t.getTicker());
+            //get set of instruments
+            Set<String> instruments = new HashSet<>();
+            for (TradeRaw t : list) {
+                instruments.add(t.getInstrument());
             }
+            for (String instrument : instruments) {
+                List<Trades> trades = new ArrayList<>();
 
-            //calculate each raw trade one by one for one ticker
-            for (String ticker : tickers) {
-                List<TradeCalculated> purchases = new ArrayList<>();
-                List<TradeCalculated> sales = new ArrayList<>();
-                double finalPLRub = 0.0;
-                double finalResult = 0.0;
-                double finalTaxRub = 0.0;
-                double finalDeductionRub = 0.0;
-                //calculate sales
-                List<TradeRaw> s = filterTypeTrades(instrumentsFiltered, instrument, ticker, "C");
-                if (s.size() > 0) {
-                    for (TradeRaw t : s) {
-                        TradeCalculated calculated = calculate(exchangeRates, t, true);
-                        finalPLRub = finalPLRub + calculated.getRealizedPLRub();
-                        finalResult = finalResult + calculated.getResult();
-                        sales.add(calculated);
-                    }
+                //filter instruments
+                List<TradeRaw> instrumentsFiltered = filterTradesByInstruments(list, instrument);
+
+                //get set of tickers
+                Set<String> tickers = new HashSet<>();
+                for (TradeRaw t : instrumentsFiltered) {
+                    tickers.add(t.getTicker());
                 }
 
-                //calculate purchases
-                List<TradeRaw> p = filterTypeTrades(instrumentsFiltered, instrument, ticker, "O");
-                if (p.size() > 0) {
-                    for (TradeRaw t : p) {
-                        purchases.add(calculate(exchangeRates, t, false));
+                //calculate each raw trade one by one for one ticker
+                for (String ticker : tickers) {
+                    List<TradeCalculated> purchases = new ArrayList<>();
+                    List<TradeCalculated> sales = new ArrayList<>();
+                    double finalPLRub = 0.0;
+                    double finalResult = 0.0;
+                    double finalTaxRub = 0.0;
+                    double finalDeductionRub = 0.0;
+                    //calculate sales
+                    List<TradeRaw> s = filterTypeTrades(instrumentsFiltered, instrument, ticker, "C");
+                    if (s.size() > 0) {
+                        for (TradeRaw t : s) {
+                            TradeCalculated calculated = calculate(exchangeRates, t, true);
+                            finalPLRub = finalPLRub + calculated.getRealizedPLRub();
+                            finalResult = finalResult + calculated.getResult();
+                            sales.add(calculated);
+                        }
                     }
-                }
 
-                //get currency
-                String currency = "";
-                if (purchases.size() > 0)
-                    currency = purchases.get(0).getCurrency();
-                else
-                    currency = sales.get(0).getCurrency();
-                if (finalResult > 0)
-                    finalTaxRub = finalResult;
-                else
-                    finalDeductionRub = finalPLRub;
-                trades.add(new Trades(instrument, currency, ticker, finalPLRub, finalTaxRub, finalDeductionRub, purchases, sales));
+                    //calculate purchases
+                    List<TradeRaw> p = filterTypeTrades(instrumentsFiltered, instrument, ticker, "O");
+                    if (p.size() > 0) {
+                        for (TradeRaw t : p) {
+                            purchases.add(calculate(exchangeRates, t, false));
+                        }
+                    }
+
+                    //get currency
+                    String currency = "";
+                    if (purchases.size() > 0)
+                        currency = purchases.get(0).getCurrency();
+                    else
+                        currency = sales.get(0).getCurrency();
+                    if (finalResult > 0)
+                        finalTaxRub = finalResult;
+                    else
+                        finalDeductionRub = finalPLRub;
+                    trades.add(new Trades(instrument, currency, ticker, finalPLRub, finalTaxRub, finalDeductionRub, purchases, sales));
+                }
+                result.put(instrument, trades);
             }
-            result.put(instrument, trades);
         }
         return result;
     }
@@ -183,48 +176,5 @@ public class TradesController {
                 .filter(tradeRaw -> tradeRaw.getTicker().equals(ticker))
                 .filter(tradeRaw -> tradeRaw.getCode().contains(code))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Method defines range of date from the list of transactions. By default, "from" date decreased on 30 days
-     * because in the new year holiday could be 8 -10 empty dates.
-     *
-     * @param list - list of transactions
-     * Return map with two keys:
-     * - "from" with the earliest date in the list
-     * - "to" with the latest date in the list
-     * @return - map with range of dates
-     */
-    private Map<String, Date> getDatesRange(List<TradeRaw> list) {
-        DateUtil dateUtil = new DateUtil();
-        Map<String, Date> result = new HashMap<>();
-        Date from = list.get(0).getDate();
-        Date to = list.get(0).getDate();
-        for (TradeRaw d : list) {
-            if (d.getDate().before(from))
-                from = d.getDate();
-            if (d.getDate().after(to))
-                to = d.getDate();
-        }
-        from = dateUtil.increaseDate(from, -30);
-        result.put("from", from);
-        result.put("to", to);
-        return result;
-    }
-
-    /**
-     * Method defines list of currencies from the list of transactions
-     *
-     * @param list - list of transactions
-     * @return list of currencies
-     */
-    private List<String> getListOfCurrencies(List<TradeRaw> list) {
-        List<String> currencies = new ArrayList<>();
-        for (TradeRaw d : list) {
-            if (currencies.contains(d.getCurrency()))
-                continue;
-            currencies.add(d.getCurrency());
-        }
-        return currencies;
     }
 }

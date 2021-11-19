@@ -73,7 +73,6 @@ public class FeesTransactionsParser {
                     }
                 }
             }
-            return feesTransactionsRaw;
         }
         return feesTransactionsRaw;
     }
