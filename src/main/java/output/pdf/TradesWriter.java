@@ -3,7 +3,9 @@ package output.pdf;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import dto.DocumentCalculated;
 import dto.TradeCalculated;
+import dto.TradeResultsForInstrument;
 import dto.Trades;
 
 import java.text.DecimalFormat;
@@ -16,7 +18,9 @@ import java.util.stream.Stream;
 public class TradesWriter {
 
     private static final int numberOfColumns = 9;
-    private static final int resultHeaderColSpan = 4;
+    private static final int tradeResultHeaderColSpan = 4;
+    private static final int instrumentResultHeaderColSpan = 2;
+    private static final int finalResultHeaderColSpan = 2;
 
     private static final String dateColumnName = "Date";
     private static final String quantityColumnName = "Quantity";
@@ -30,8 +34,12 @@ public class TradesWriter {
     private static final String finalPLColumnName = "Final PL:";
     private static final String taxRubColumnName = "Tax rub:";
     private static final String deductionRubColumnName = "Deduction:";
+    private static final String sumTaxForInstrumentRubColumnName = "Sum tax to pay for: ";
+    private static final String sumDeductionForInstrumentRubColumnName = "Sum deduction to pay for: ";
+    private static final String finalTaxColumnName = "Sum tax to pay:";
+    private static final String finalDeductionColumnName = "Sum deduction:";
 
-    public Document writeTrades(Map<String, List<Trades>> trades, Document document, Font font) {
+    public Document writeTrades(DocumentCalculated documentCalculated, Document document, Font font) {
 
         document.newPage();
         Chunk chunk = new Chunk("Tax calculation, Trades", font);
@@ -40,13 +48,13 @@ public class TradesWriter {
         table.setWidthPercentage(100);
 
 
-        Set<String> instruments = trades.keySet();
+        Set<String> instruments = documentCalculated.getTrades().keySet();
         for (String instrument : instruments) {
             addInstrumentHeader(table, instrument);
             addEmptyRow(table);
             addEmptyRow(table);
 
-            List<Trades> list = trades.get(instrument);
+            List<Trades> list = documentCalculated.getTrades().get(instrument);
 
             for (Trades t : list) {
                 List<TradeCalculated> purchases = t.getPurchases();
@@ -72,7 +80,10 @@ public class TradesWriter {
                     addEmptyRow(table);
                 }
             }
+            writeInstrumentResult(table, instrument, documentCalculated.getFinalResultsByInstruments().get(instrument));
+            addEmptyRow(table);
         }
+        writeFinalResult(table, documentCalculated.getTradesTaxResult(), documentCalculated.getTradesDeductionResult());
 
         try {
             document.add(chunk);
@@ -135,17 +146,45 @@ public class TradesWriter {
 
         CellsProvider cellsProvider = new CellsProvider();
 
-        table.addCell(cellsProvider.getResultHeaderCell(finalPLColumnName, resultHeaderColSpan));
+        table.addCell(cellsProvider.getResultHeaderCell(finalPLColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getFinalPLRub())));
-        addCells(table, numberOfColumns - resultHeaderColSpan - 1);
+        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
 
-        table.addCell(cellsProvider.getResultHeaderCell(taxRubColumnName, resultHeaderColSpan));
+        table.addCell(cellsProvider.getResultHeaderCell(taxRubColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getTaxRub())));
-        addCells(table, numberOfColumns - resultHeaderColSpan - 1);
+        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
 
-        table.addCell(cellsProvider.getResultHeaderCell(deductionRubColumnName, resultHeaderColSpan));
+        table.addCell(cellsProvider.getResultHeaderCell(deductionRubColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getDeductionRub())));
-        addCells(table, numberOfColumns - resultHeaderColSpan - 1);
+        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
+    }
+
+    private void writeInstrumentResult(PdfPTable table, String instrument, TradeResultsForInstrument tradeResultsForInstrument) {
+        DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
+
+        CellsProvider cellsProvider = new CellsProvider();
+
+        table.addCell(cellsProvider.getResultHeaderCell(sumTaxForInstrumentRubColumnName + instrument, instrumentResultHeaderColSpan));
+        table.addCell(cellsProvider.getRowDataCell(df.format(tradeResultsForInstrument.getTax())));
+        addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
+
+        table.addCell(cellsProvider.getResultHeaderCell(sumDeductionForInstrumentRubColumnName + instrument, instrumentResultHeaderColSpan));
+        table.addCell(cellsProvider.getRowDataCell(df.format(tradeResultsForInstrument.getDeduction())));
+        addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
+    }
+
+    private void writeFinalResult(PdfPTable table, double tradesTaxResult, double tradesDeductionResult) {
+        DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
+
+        CellsProvider cellsProvider = new CellsProvider();
+
+        table.addCell(cellsProvider.getResultHeaderCell(finalTaxColumnName, finalResultHeaderColSpan));
+        table.addCell(cellsProvider.getRowDataCell(df.format(tradesTaxResult)));
+        addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
+
+        table.addCell(cellsProvider.getResultHeaderCell(finalDeductionColumnName, finalResultHeaderColSpan));
+        table.addCell(cellsProvider.getRowDataCell(df.format(tradesDeductionResult)));
+        addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
     }
 
     private void addCells(PdfPTable table, int numberOfCells) {

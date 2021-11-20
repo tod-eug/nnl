@@ -4,6 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import dto.DividendCalculated;
+import dto.DocumentCalculated;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 public class DividendWriter {
+
+    private static final int numberOfColumns = 10;
+    private static final int resultHeaderColSpan = 2;
 
     private static final String tickerColumnName = "Ticker";
     private static final String paymentDateColumnName = "Payment Date";
@@ -22,8 +26,9 @@ public class DividendWriter {
     private static final String payedTaxRubColumnName = "Payed tax rub";
     private static final String resultColumnName = "Result";
     private static final String exchangeRateColumnName = "Exchange rate";
+    private static final String finalTaxColumnName = "Sum tax to pay:";
 
-    public Document writeDividends(ArrayList<DividendCalculated> list, Document document, Font font) {
+    public Document writeDividends(DocumentCalculated documentCalculated, Document document, Font font) {
 
 
         Chunk chunk = new Chunk("Tax calculation, Dividends", font);
@@ -32,7 +37,8 @@ public class DividendWriter {
         table.setWidthPercentage(100);
         addTableHeader(table);
         table.setHeaderRows(1);
-        addRows(table, list);
+        addRows(table, documentCalculated.getDividends());
+        addResult(table, documentCalculated.getDividendResult());
 
         try {
             document.add(chunk);
@@ -71,6 +77,29 @@ public class DividendWriter {
             table.addCell(cellsProvider.getRowDataCell(df.format(d.getPayedTaxRub())));
             table.addCell(cellsProvider.getRowDataCell(df.format(d.getResult())));
             table.addCell(cellsProvider.getRowDataCell(df.format(d.getExchangeRate())));
+        }
+    }
+
+    private void addResult(PdfPTable table, double result) {
+        DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
+
+        CellsProvider cellsProvider = new CellsProvider();
+
+        addEmptyRow(table);
+        table.addCell(cellsProvider.getResultHeaderCell(finalTaxColumnName, resultHeaderColSpan));
+        table.addCell(cellsProvider.getRowDataCell(df.format(result)));
+        addCells(table, numberOfColumns - resultHeaderColSpan - 1);
+    }
+
+    private void addEmptyRow(PdfPTable table) {
+        PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+        table.addCell(cellBlankRow);
+        addCells(table, numberOfColumns - 1);
+    }
+
+    private void addCells(PdfPTable table, int numberOfCells) {
+        for (int i = 0; i < numberOfCells; i++) {
+            table.addCell("");
         }
     }
 }

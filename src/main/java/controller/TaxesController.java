@@ -92,13 +92,19 @@ public class TaxesController {
             dividendResult = dividendResult + d.getResult();
         }
 
+        Map<String, TradeResultsForInstrument> finalResultsByInstruments = new HashMap<>();
         Set<String> instruments = trades.keySet();
         for (String instrument : instruments) {
+            double tax = 0.0;
+            double deduction = 0.0;
             List<Trades> list = trades.get(instrument);
             for (Trades t : list) {
+                tax = tax + t.getTaxRub();
+                deduction = deduction + t.getDeductionRub();
                 tradesTaxResult = tradesTaxResult + t.getTaxRub();
                 tradesDeductionResult = tradesDeductionResult + t.getDeductionRub();
             }
+            finalResultsByInstruments.put(instrument, new TradeResultsForInstrument(tax, deduction));
         }
 
         for (InterestCalculated i : interests) {
@@ -116,7 +122,7 @@ public class TaxesController {
         finalTaxResult = dividendResult + tradesTaxResult + interestsResult;
         finalDeductionResult = tradesDeductionResult + feesResult + feesTransactionsResult;
 
-        return new DocumentCalculated(dividends, dividendResult, trades, tradesTaxResult, tradesDeductionResult,
+        return new DocumentCalculated(dividends, dividendResult, trades, finalResultsByInstruments, tradesTaxResult, tradesDeductionResult,
                 interests, interestsResult, fees, feesResult, feesTransactions, feesTransactionsResult, finalTaxResult, finalDeductionResult);
     }
 

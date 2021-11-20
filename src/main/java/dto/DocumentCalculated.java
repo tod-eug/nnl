@@ -8,6 +8,7 @@ public class DocumentCalculated {
     private final ArrayList<DividendCalculated> dividends;
     private final double dividendResult;
     private final Map<String, List<Trades>> trades;
+    private final Map<String, TradeResultsForInstrument> finalResultsByInstruments;
     private final double tradesTaxResult;
     private final double tradesDeductionResult;
     private final ArrayList<InterestCalculated> interests;
@@ -22,6 +23,7 @@ public class DocumentCalculated {
     public DocumentCalculated(ArrayList<DividendCalculated> dividends,
                               double dividendResult,
                               Map<String, List<Trades>> trades,
+                              Map<String, TradeResultsForInstrument> finalResultsByInstruments,
                               double tradesTaxResult,
                               double tradesDeductionResult,
                               ArrayList<InterestCalculated> interests,
@@ -35,6 +37,7 @@ public class DocumentCalculated {
         this.dividends = dividends;
         this.dividendResult = dividendResult;
         this.trades = trades;
+        this.finalResultsByInstruments = finalResultsByInstruments;
         this.tradesTaxResult = tradesTaxResult;
         this.tradesDeductionResult = tradesDeductionResult;
         this.interests = interests;
@@ -57,6 +60,10 @@ public class DocumentCalculated {
 
     public Map<String, List<Trades>> getTrades() {
         return trades;
+    }
+
+    public Map<String, TradeResultsForInstrument> getFinalResultsByInstruments() {
+        return finalResultsByInstruments;
     }
 
     public double getTradesTaxResult() {

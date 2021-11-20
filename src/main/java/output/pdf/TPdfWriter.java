@@ -31,13 +31,15 @@ public class TPdfWriter {
         document.setPageSize(PageSize.A4.rotate());
         document.open();
         Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        document = dividendWriter.writeDividends(documentCalculated.getDividends(), document, font);
+        if (documentCalculated.getDividends().size() > 0)
+            document = dividendWriter.writeDividends(documentCalculated, document, font);
         try {
             document.add(new Paragraph(10, "\u00a0"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        document = tradesWriter.writeTrades(documentCalculated.getTrades(), document, font);
+        if (documentCalculated.getTrades().size() > 0)
+            document = tradesWriter.writeTrades(documentCalculated, document, font);
         document.close();
         return file;
     }
