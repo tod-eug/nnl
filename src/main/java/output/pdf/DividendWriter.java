@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class DividendWriter {
 
     private static final int numberOfColumns = 10;
-    private static final int resultHeaderColSpan = 2;
+    private static final int resultHeaderColSpan = 8;
 
     private static final String tickerColumnName = "Ticker";
     private static final String paymentDateColumnName = "Payment Date";
