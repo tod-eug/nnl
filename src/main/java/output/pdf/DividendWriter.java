@@ -85,21 +85,9 @@ public class DividendWriter {
 
         CellsProvider cellsProvider = new CellsProvider();
 
-        addEmptyRow(table);
+        cellsProvider.addEmptyRow(table, numberOfColumns);
         table.addCell(cellsProvider.getResultHeaderCell(finalTaxColumnName, resultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(result)));
-        addCells(table, numberOfColumns - resultHeaderColSpan - 1);
-    }
-
-    private void addEmptyRow(PdfPTable table) {
-        PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
-        table.addCell(cellBlankRow);
-        addCells(table, numberOfColumns - 1);
-    }
-
-    private void addCells(PdfPTable table, int numberOfCells) {
-        for (int i = 0; i < numberOfCells; i++) {
-            table.addCell("");
-        }
+        cellsProvider.addCells(table, numberOfColumns - resultHeaderColSpan - 1);
     }
 }

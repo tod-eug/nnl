@@ -11,7 +11,6 @@ import dto.Trades;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -41,6 +40,8 @@ public class TradesWriter {
 
     public Document writeTrades(DocumentCalculated documentCalculated, Document document, Font font) {
 
+        CellsProvider cellsProvider = new CellsProvider();
+
         document.newPage();
         Chunk chunk = new Chunk("Tax calculation, Trades", font);
 
@@ -51,8 +52,8 @@ public class TradesWriter {
         Set<String> instruments = documentCalculated.getTrades().keySet();
         for (String instrument : instruments) {
             addInstrumentHeader(table, instrument);
-            addEmptyRow(table);
-            addEmptyRow(table);
+            cellsProvider.addEmptyRow(table, numberOfColumns);
+            cellsProvider.addEmptyRow(table, numberOfColumns);
 
             List<Trades> list = documentCalculated.getTrades().get(instrument);
 
@@ -75,13 +76,13 @@ public class TradesWriter {
                             addRows(table, tc);
                         }
                     }
-                    addEmptyRow(table);
+                    cellsProvider.addEmptyRow(table, numberOfColumns);
                     writeResult(table, t);
-                    addEmptyRow(table);
+                    cellsProvider.addEmptyRow(table, numberOfColumns);
                 }
             }
             writeInstrumentResult(table, instrument, documentCalculated.getFinalResultsByInstruments().get(instrument));
-            addEmptyRow(table);
+            cellsProvider.addEmptyRow(table, numberOfColumns);
         }
         writeFinalResult(table, documentCalculated.getTradesTaxResult(), documentCalculated.getTradesDeductionResult());
 
@@ -106,12 +107,6 @@ public class TradesWriter {
         CellsProvider cellsProvider = new CellsProvider();
         PdfPCell cell = cellsProvider.getTicketHeaderCell(text, numberOfColumns);
         table.addCell(cell);
-    }
-
-    private void addEmptyRow(PdfPTable table) {
-        PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
-        table.addCell(cellBlankRow);
-        addCells(table, numberOfColumns - 1);
     }
 
     private void addTableHeader(PdfPTable table) {
@@ -148,15 +143,15 @@ public class TradesWriter {
 
         table.addCell(cellsProvider.getResultHeaderCell(finalPLColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getFinalPLRub())));
-        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
 
         table.addCell(cellsProvider.getResultHeaderCell(taxRubColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getTaxRub())));
-        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
 
         table.addCell(cellsProvider.getResultHeaderCell(deductionRubColumnName, tradeResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(t.getDeductionRub())));
-        addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - tradeResultHeaderColSpan - 1);
     }
 
     private void writeInstrumentResult(PdfPTable table, String instrument, TradeResultsForInstrument tradeResultsForInstrument) {
@@ -166,11 +161,11 @@ public class TradesWriter {
 
         table.addCell(cellsProvider.getResultHeaderCell(sumTaxForInstrumentRubColumnName + instrument, instrumentResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(tradeResultsForInstrument.getTax())));
-        addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
 
         table.addCell(cellsProvider.getResultHeaderCell(sumDeductionForInstrumentRubColumnName + instrument, instrumentResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(tradeResultsForInstrument.getDeduction())));
-        addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - instrumentResultHeaderColSpan - 1);
     }
 
     private void writeFinalResult(PdfPTable table, double tradesTaxResult, double tradesDeductionResult) {
@@ -180,16 +175,10 @@ public class TradesWriter {
 
         table.addCell(cellsProvider.getResultHeaderCell(finalTaxColumnName, finalResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(tradesTaxResult)));
-        addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
+        cellsProvider.addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
 
         table.addCell(cellsProvider.getResultHeaderCell(finalDeductionColumnName, finalResultHeaderColSpan));
         table.addCell(cellsProvider.getRowDataCell(df.format(tradesDeductionResult)));
-        addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
-    }
-
-    private void addCells(PdfPTable table, int numberOfCells) {
-        for (int i = 0; i < numberOfCells; i++) {
-            table.addCell("");
-        }
+        cellsProvider.addCells(table, numberOfColumns - finalResultHeaderColSpan - 1);
     }
 }
