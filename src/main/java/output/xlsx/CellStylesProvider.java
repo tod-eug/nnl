@@ -1,7 +1,10 @@
 package output.xlsx;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -30,5 +33,13 @@ public class CellStylesProvider {
         CellStyle doubleCell = sheet.getWorkbook().createCellStyle();
         doubleCell.setDataFormat(createHelper.createDataFormat().getFormat(exchangeRateFormat));
         return doubleCell;
+    }
+
+    public XSSFSheet addMergedCell(XSSFSheet sheet, Row row, int rowCount, int columnCount, int colSpan, String text) {
+        CellRangeAddress mergedRegion = new CellRangeAddress(rowCount,rowCount,columnCount,columnCount+colSpan);
+        sheet.addMergedRegion(mergedRegion);
+        Cell cell1 = row.createCell(columnCount);
+        cell1.setCellValue(text);
+        return sheet;
     }
 }

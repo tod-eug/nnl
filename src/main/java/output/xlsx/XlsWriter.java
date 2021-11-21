@@ -11,12 +11,14 @@ public class XlsWriter {
 
     public static File writeXlsFile(DocumentCalculated documentCalculated, String fileName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        SummaryWriter summaryWriter = new SummaryWriter();
         DividendWriter dividendWriter = new DividendWriter();
         TradesWriter tradesWriter = new TradesWriter();
         FilesUtils fileUtils = new FilesUtils();
 
-        workbook = dividendWriter.writeDividends(documentCalculated.getDividends(), workbook);
-        workbook = tradesWriter.writeTrades(documentCalculated.getTrades(), workbook);
+        workbook = summaryWriter.writeSummary(documentCalculated, workbook);
+        workbook = dividendWriter.writeDividends(documentCalculated, workbook);
+        workbook = tradesWriter.writeTrades(documentCalculated, workbook);
 
         File file = fileUtils.writeXlsFile(workbook, fileName);
         return file;

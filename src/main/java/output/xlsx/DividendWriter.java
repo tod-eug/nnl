@@ -1,6 +1,7 @@
 package output.xlsx;
 
 import dto.DividendCalculated;
+import dto.DocumentCalculated;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -10,6 +11,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 
 public class DividendWriter {
+
+    private static final int numberOfColumns = 10;
+    private static final int headerColSpan = 7;
 
     private static final String listName = "Dividends";
 
@@ -23,16 +27,18 @@ public class DividendWriter {
     private static final String payedTaxRubColumnName = "Payed tax rub";
     private static final String resultColumnName = "Result";
     private static final String exchangeRateColumnName = "Exchange rate";
+    private static final String finalTaxColumnName = "Sum tax to pay:";
 
 
-    public XSSFWorkbook writeDividends(ArrayList<DividendCalculated> list, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeDividends(DocumentCalculated dc, XSSFWorkbook workbook) {
         XSSFSheet sheet = workbook.createSheet(listName);
 
         int rowCount = 0;
 
         rowCount = setSheetHeader(sheet, rowCount);
 
-        writeDividends(workbook, sheet, list, rowCount);
+        rowCount = writeDividends(workbook, sheet, dc.getDividends(), rowCount);
+        rowCount = writeResult(workbook, sheet, rowCount, dc.getDividendResult());
         XlsWriter.autoSizeColumn(sheet, 10);
         return workbook;
     }
@@ -64,7 +70,7 @@ public class DividendWriter {
         return rowCount;
     }
 
-    private void writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount) {
+    private int writeDividends(XSSFWorkbook workbook, XSSFSheet sheet, ArrayList<DividendCalculated> list, int rowCount) {
         for (DividendCalculated d : list) {
             CellStylesProvider cellStylesProvider = new CellStylesProvider();
             CellStyle dateCellStyle = cellStylesProvider.getDateCellStyle(workbook, sheet);
@@ -103,5 +109,22 @@ public class DividendWriter {
             cell10.setCellStyle(exchangeRateCellStyle);
             cell10.setCellValue(d.getExchangeRate());
         }
+        rowCount++;
+        return rowCount;
+    }
+
+    private int writeResult(XSSFWorkbook workbook, XSSFSheet sheet, int rowCount, double result) {
+        CellStylesProvider cellStylesProvider = new CellStylesProvider();
+        CellStyle doubleCellStyle = cellStylesProvider.getDoubleCellStyle(workbook, sheet);
+
+        int columnCount = 0;
+        Row rowD = sheet.createRow(rowCount);
+        sheet = cellStylesProvider.addMergedCell(sheet, rowD, rowCount, columnCount, columnCount+headerColSpan, finalTaxColumnName);
+
+        Cell cell3 = rowD.createCell(columnCount+headerColSpan+1);
+        cell3.setCellStyle(doubleCellStyle);
+        cell3.setCellValue(result);
+        rowCount++;
+        return rowCount;
     }
 }
