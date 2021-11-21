@@ -18,6 +18,14 @@ public class CellsProvider {
         return cell;
     }
 
+    public PdfPCell getRowDataCellWithoutBorder(String content) {
+        PdfPCell cell = new PdfPCell(new Phrase(content));
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+        cell.setBorder(0);
+        return cell;
+    }
+
     public PdfPCell getDividendHeaderCell(String content) {
         PdfPCell cell = new PdfPCell(new Phrase(content));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);

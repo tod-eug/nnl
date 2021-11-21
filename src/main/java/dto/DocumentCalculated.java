@@ -12,7 +12,7 @@ public class DocumentCalculated {
     private final double tradesTaxResult;
     private final double tradesDeductionResult;
     private final ArrayList<InterestCalculated> interests;
-    private final double interestsResult;
+    private final double interestsTaxResult;
     private final ArrayList<FeesCalculated> fees;
     private final double feesResult;
     private final ArrayList<FeesTransactionsCalculated> feesTransactions;
@@ -27,7 +27,7 @@ public class DocumentCalculated {
                               double tradesTaxResult,
                               double tradesDeductionResult,
                               ArrayList<InterestCalculated> interests,
-                              double interestsResult,
+                              double interestsTaxResult,
                               ArrayList<FeesCalculated> fees,
                               double feesResult,
                               ArrayList<FeesTransactionsCalculated> feesTransactions,
@@ -41,7 +41,7 @@ public class DocumentCalculated {
         this.tradesTaxResult = tradesTaxResult;
         this.tradesDeductionResult = tradesDeductionResult;
         this.interests = interests;
-        this.interestsResult = interestsResult;
+        this.interestsTaxResult = interestsTaxResult;
         this.fees = fees;
         this.feesResult = feesResult;
         this.feesTransactions = feesTransactions;
@@ -78,8 +78,8 @@ public class DocumentCalculated {
         return interests;
     }
 
-    public double getInterestsResult() {
-        return interestsResult;
+    public double getInterestsTaxResult() {
+        return interestsTaxResult;
     }
 
     public ArrayList<FeesCalculated> getFees() {

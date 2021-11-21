@@ -10,6 +10,7 @@ public class InterestCalculated {
     private final Date date;
     private final double amount;
     private final double amountRub;
+    private final double taxRub;
     private final double exchangeRate;
 
     public InterestCalculated (String currency,
@@ -17,6 +18,7 @@ public class InterestCalculated {
                                String description,
                                Double amount,
                                Double amountRub,
+                               Double taxRub,
                                Double exchangeRate) {
         id = UUID.randomUUID();
         this.currency = currency;
@@ -24,6 +26,7 @@ public class InterestCalculated {
         this.description = description;
         this.amount = amount;
         this.amountRub = amountRub;
+        this.taxRub = taxRub;
         this.exchangeRate = exchangeRate;
     }
 
@@ -53,5 +56,9 @@ public class InterestCalculated {
 
     public String getDescription() {
         return description;
+    }
+
+    public double getTaxRub() {
+        return taxRub;
     }
 }

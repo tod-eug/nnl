@@ -7,6 +7,8 @@ import java.util.*;
 
 public class InterestController {
 
+    public static Double taxRate = 0.13;
+
     public ArrayList<InterestCalculated> calculateInterest(ArrayList<InterestRaw> list, Map<String, Map<Date, ExchangeRate>> exchangeRates) {
 
         ArrayList<InterestCalculated> listOfTaxes = new ArrayList<>();
@@ -23,9 +25,10 @@ public class InterestController {
                 int nominal = exchangeRates.get(i.getCurrency()).get(exchangeRateDate).getNominal();
 
                 Double amountRub = amount * value / nominal;
+                Double taxRub = amountRub * taxRate;
 
                 listOfTaxes.add(new InterestCalculated(i.getCurrency(), i.getDate(), i.getDescription(), amount,
-                        amountRub, value));
+                        amountRub, taxRub, value));
             }
         }
         return listOfTaxes;

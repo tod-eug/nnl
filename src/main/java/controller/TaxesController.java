@@ -82,7 +82,7 @@ public class TaxesController {
         double dividendResult = 0.0;
         double tradesTaxResult = 0.0;
         double tradesDeductionResult = 0.0;
-        double interestsResult = 0.0;
+        double interestsTaxResult = 0.0;
         double feesResult = 0.0;
         double feesTransactionsResult = 0.0;
         double finalTaxResult = 0.0;
@@ -108,7 +108,7 @@ public class TaxesController {
         }
 
         for (InterestCalculated i : interests) {
-            interestsResult = interestsResult + i.getAmountRub();
+            interestsTaxResult = interestsTaxResult + i.getTaxRub();
         }
 
         for (FeesCalculated f : fees) {
@@ -119,11 +119,11 @@ public class TaxesController {
             feesTransactionsResult = feesTransactionsResult + ft.getAmountRub();
         }
 
-        finalTaxResult = dividendResult + tradesTaxResult + interestsResult;
+        finalTaxResult = dividendResult + tradesTaxResult + interestsTaxResult;
         finalDeductionResult = tradesDeductionResult + feesResult + feesTransactionsResult;
 
         return new DocumentCalculated(dividends, dividendResult, trades, finalResultsByInstruments, tradesTaxResult, tradesDeductionResult,
-                interests, interestsResult, fees, feesResult, feesTransactions, feesTransactionsResult, finalTaxResult, finalDeductionResult);
+                interests, interestsTaxResult, fees, feesResult, feesTransactions, feesTransactionsResult, finalTaxResult, finalDeductionResult);
     }
 
     /**

@@ -41,6 +41,7 @@ public class DividendWriter {
         addResult(table, documentCalculated.getDividendResult());
 
         try {
+            document.add(new Paragraph(10, "\u00a0"));
             document.add(chunk);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
