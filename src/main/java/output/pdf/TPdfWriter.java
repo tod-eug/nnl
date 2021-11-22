@@ -35,7 +35,8 @@ public class TPdfWriter {
         document.setPageSize(PageSize.A4.rotate());
         document.open();
         Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        document = summaryWriter.writeSummary(documentCalculated, document, font);
+        if (documentCalculated.getFinalTaxResult() > 0.0)
+            document = summaryWriter.writeSummary(documentCalculated, document, font);
         if (documentCalculated.getDividends().size() > 0)
             document = dividendWriter.writeDividends(documentCalculated, document, font);
         if (documentCalculated.getTrades().size() > 0)

@@ -55,10 +55,10 @@ public class TaxesController {
 
         //write results in file and save file
         String uuidProcessedFile = UUID.randomUUID().toString();
-        String processedFileName = uuidProcessedFile + ".xlsx";
+        String processedFileName = uuidProcessedFile + ".pdf";
         TPdfWriter tPdfWriter = new TPdfWriter();
-        File file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
-//        File file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
+//        File file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
+        File file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
         dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
