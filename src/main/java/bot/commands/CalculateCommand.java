@@ -1,8 +1,10 @@
 package bot.commands;
 
 import bot.Constants;
+import bot.enums.Format;
 import bot.enums.State;
 import bot.TaxBot;
+import db.FormatHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -22,7 +24,9 @@ public class CalculateCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        String response = Constants.CALCULATE_REPLY_PART_1 + TaxBot.getFormat(message.getChatId()) + Constants.CALCULATE_REPLY_PART_2;
+        FormatHelper ufh = new FormatHelper();
+        Format format = ufh.getFormat(message.getChatId(), Format.pdf);
+        String response = Constants.CALCULATE_REPLY_PART_1 + format + Constants.CALCULATE_REPLY_PART_2;
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(response);

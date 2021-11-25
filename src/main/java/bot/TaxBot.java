@@ -7,6 +7,7 @@ import bot.commands.StartCommand;
 import bot.enums.Format;
 import bot.enums.State;
 import controller.TaxesController;
+import db.FormatHelper;
 import db.UsersHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -29,14 +30,6 @@ import java.util.Map;
 public class TaxBot extends TelegramLongPollingCommandBot {
 
     public static Map<Long, State> stateMap = new HashMap<>();
-    public static Map<Long, Format> formatMap = new HashMap<>();
-
-    public static String getFormat(long chatId) {
-        Format format = Format.pdf;
-        if (formatMap.containsKey(chatId))
-            format = formatMap.get(chatId);
-        return format.toString();
-    }
 
     public TaxBot() {
         super();
@@ -63,22 +56,22 @@ public class TaxBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
+        FormatHelper ufh = new FormatHelper();
+
         if (update.hasCallbackQuery()) {
             switch (update.getCallbackQuery().getData().toLowerCase(Locale.ROOT)) {
                 case "pdf":
-                    formatMap.put(update.getCallbackQuery().getMessage().getChatId(), Format.pdf);
+                    ufh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.pdf);
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
                     deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
                     break;
                 case "xlsx":
-                    formatMap.put(update.getCallbackQuery().getMessage().getChatId(), Format.xlsx);
+                    ufh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.xlsx);
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
                     deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
             }
         }
-        Format format = Format.pdf;
-        if (formatMap.containsKey(update.getMessage().getChatId()))
-            format = formatMap.get(update.getMessage().getChatId());
+        Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);
 
         State state = State.FREE;
         if (stateMap.containsKey(update.getMessage().getChatId()))

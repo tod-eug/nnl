@@ -4,6 +4,7 @@ import bot.Constants;
 import bot.TaxBot;
 import bot.enums.Format;
 import bot.enums.State;
+import db.FormatHelper;
 import db.UsersHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -26,6 +27,7 @@ public class StartCommand implements IBotCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         UsersHelper uh = new UsersHelper();
+        FormatHelper ufh = new FormatHelper();
         String userId = uh.findUserByTgId(message.getFrom().getId().toString(), message.getFrom());
 
         String response = Constants.START_REPLY;
@@ -37,7 +39,7 @@ public class StartCommand implements IBotCommand {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        TaxBot.formatMap.put(message.getChatId(), Format.pdf);
+        ufh.setFormat(message.getChatId(), Format.pdf);
         TaxBot.stateMap.put(message.getChatId(), State.FREE);
     }
 }
