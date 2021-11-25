@@ -1,5 +1,6 @@
 package controller;
 
+import bot.enums.Format;
 import currency.ExchangeRatesProvider;
 import db.DocumentsHelper;
 import dto.*;
@@ -16,7 +17,7 @@ import java.util.*;
 
 public class TaxesController {
 
-    public File getCalculatedTaxes(String userId, File gotFile) {
+    public File getCalculatedTaxes(File gotFile, Format format) {
 
         FilesUtils fileUtils = new FilesUtils();
         DocumentsHelper dHelper = new DocumentsHelper();
@@ -25,7 +26,7 @@ public class TaxesController {
         String uuidRawFile = UUID.randomUUID().toString();
         String rawFileName = uuidRawFile + ".htm";
         File rawFile = fileUtils.saveRawFile(gotFile, rawFileName);
-        dHelper.createRawDocument(uuidRawFile, userId, rawFileName);
+//        dHelper.createRawDocument(uuidRawFile, userId, rawFileName);
 
         //get document
         Document doc = DataProvider.getDocument(rawFile);
@@ -55,11 +56,20 @@ public class TaxesController {
 
         //write results in file and save file
         String uuidProcessedFile = UUID.randomUUID().toString();
-        String processedFileName = uuidProcessedFile + ".pdf";
+        String processedFileName = ".pdf";
         TPdfWriter tPdfWriter = new TPdfWriter();
-//        File file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
-        File file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
-        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
+        File file = null;
+        switch (format) {
+            case pdf:
+                processedFileName = uuidProcessedFile + ".pdf";
+                file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
+                break;
+            case xlsx:
+                processedFileName = uuidProcessedFile + ".xlsx";
+                file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
+                break;
+        }
+//        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
 
