@@ -37,14 +37,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (update.getMessage().getText().startsWith("/start")) {
                 UsersHelper uh = new UsersHelper();
-                String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString());
-                if (userId.equals(""))
-                    userId = uh.createUser(update.getMessage().getFrom().getId().toString(),
-                            update.getMessage().getFrom().getUserName(),
-                            update.getMessage().getFrom().getFirstName(),
-                            update.getMessage().getFrom().getLastName(),
-                            update.getMessage().getFrom().getIsBot(),
-                            update.getMessage().getFrom().getLanguageCode());
+                String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString(), update.getMessage().getFrom());
                 String response = "Добро пожаловать!";
                 SendMessage message = new SendMessage();
                 message.setChatId(update.getMessage().getChatId().toString());
@@ -68,14 +61,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
 
         if (update.getMessage().hasDocument()) {
             UsersHelper uh = new UsersHelper();
-            String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString());
-            if (userId.equals(""))
-                userId = uh.createUser(update.getMessage().getFrom().getId().toString(),
-                        update.getMessage().getFrom().getUserName(),
-                        update.getMessage().getFrom().getFirstName(),
-                        update.getMessage().getFrom().getLastName(),
-                        update.getMessage().getFrom().getIsBot(),
-                        update.getMessage().getFrom().getLanguageCode());
+            String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString(), update.getMessage().getFrom());
             String uploadedFilePath = getFilePath(update);
             File gotFile = getFile(uploadedFilePath);
 
@@ -93,7 +79,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
                 }
                 //calculations
                 TaxesController taxesController = new TaxesController();
-                File file = taxesController.getCalculatedTaxes(gotFile, Format.pdf);
+                File file = taxesController.getCalculatedTaxes(gotFile, userId, Format.pdf);
                 InputFile inputFile = new InputFile(file);
 
                 SendDocument document = new SendDocument();

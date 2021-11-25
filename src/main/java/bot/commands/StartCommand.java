@@ -26,14 +26,8 @@ public class StartCommand implements IBotCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         UsersHelper uh = new UsersHelper();
-        String userId = uh.findUserByTgId(message.getFrom().getId().toString());
-        if (userId.equals(""))
-            userId = uh.createUser(message.getFrom().getId().toString(),
-                    message.getFrom().getUserName(),
-                    message.getFrom().getFirstName(),
-                    message.getFrom().getLastName(),
-                    message.getFrom().getIsBot(),
-                    message.getFrom().getLanguageCode());
+        String userId = uh.findUserByTgId(message.getFrom().getId().toString(), message.getFrom());
+
         String response = Constants.START_REPLY;
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());

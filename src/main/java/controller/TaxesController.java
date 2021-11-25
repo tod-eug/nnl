@@ -17,7 +17,7 @@ import java.util.*;
 
 public class TaxesController {
 
-    public File getCalculatedTaxes(File gotFile, Format format) {
+    public File getCalculatedTaxes(File gotFile, String userId, Format format) {
 
         FilesUtils fileUtils = new FilesUtils();
         DocumentsHelper dHelper = new DocumentsHelper();
@@ -26,7 +26,7 @@ public class TaxesController {
         String uuidRawFile = UUID.randomUUID().toString();
         String rawFileName = uuidRawFile + ".htm";
         File rawFile = fileUtils.saveRawFile(gotFile, rawFileName);
-//        dHelper.createRawDocument(uuidRawFile, userId, rawFileName);
+        dHelper.createRawDocument(uuidRawFile, userId, rawFileName);
 
         //get document
         Document doc = DataProvider.getDocument(rawFile);
@@ -69,7 +69,7 @@ public class TaxesController {
                 file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
                 break;
         }
-//        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
+        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
 

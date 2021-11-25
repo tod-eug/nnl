@@ -1,12 +1,22 @@
 package db;
 
+import org.telegram.telegrambots.meta.api.objects.User;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class UsersHelper {
 
-    public String createUser(String tgId, String userName, String firstName, String lastName, boolean isBot, String languageCode) {
+    public String createUser(User user) {
+
+        String tgId = user.getId().toString();
+        String userName = user.getUserName();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        boolean isBot = user.getIsBot();
+        String languageCode = user.getLanguageCode();
+
 
         UUID id = UUID.randomUUID();
 
@@ -24,7 +34,7 @@ public class UsersHelper {
         return id.toString();
     }
 
-    public String findUserByTgId(String tgId) {
+    public String findUserByTgId(String tgId, User user) {
         String selectQuery = String.format("select id from public.users where tg_id = '%s';", tgId);
 
         DatabaseHelper dbHelper = new DatabaseHelper();
@@ -39,6 +49,9 @@ public class UsersHelper {
         } finally {
             dbHelper.closeConnections();
         }
+
+        if (id.equals(""))
+            id = createUser(user);
         return id;
     }
 }

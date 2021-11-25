@@ -7,6 +7,7 @@ import bot.commands.StartCommand;
 import bot.enums.Format;
 import bot.enums.State;
 import controller.TaxesController;
+import db.UsersHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -89,6 +90,9 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         }
         if (update.getMessage().hasDocument()) {
             if (state.equals(State.CALCULATE)) {
+                UsersHelper uh = new UsersHelper();
+                String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString(), update.getMessage().getFrom());
+
                 String uploadedFilePath = getFilePath(update);
                 File gotFile = getFile(uploadedFilePath);
 
@@ -99,7 +103,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
 
                     //calculations
                     TaxesController taxesController = new TaxesController();
-                    File file = taxesController.getCalculatedTaxes(gotFile, format);
+                    File file = taxesController.getCalculatedTaxes(gotFile, userId, format);
                     InputFile inputFile = new InputFile(file);
 
                     SendDocument document = new SendDocument();
