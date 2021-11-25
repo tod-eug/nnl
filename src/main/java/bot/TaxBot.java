@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -67,10 +68,12 @@ public class TaxBot extends TelegramLongPollingCommandBot {
                 case "pdf":
                     formatMap.put(update.getCallbackQuery().getMessage().getChatId(), Format.pdf);
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
+                    deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
                     break;
                 case "xlsx":
                     formatMap.put(update.getCallbackQuery().getMessage().getChatId(), Format.xlsx);
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
+                    deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
             }
         }
         Format format = Format.pdf;
@@ -147,6 +150,17 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         answerCallbackQuery.setShowAlert(success);
         try {
             execute(answerCallbackQuery);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteMessage(long chatId, int messageId) {
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(Long.toString(chatId));
+        deleteMessage.setMessageId(messageId);
+        try {
+            execute(deleteMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
