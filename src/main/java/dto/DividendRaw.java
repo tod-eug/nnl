@@ -12,7 +12,7 @@ public class DividendRaw {
     private final Date date;
     private final Date exDividendDate;
     private final Date paymentDate;
-    private final int quantity;
+    private final double quantity;
     private final double tax;
     private final double payment;
     private final double divPerShare;
@@ -25,7 +25,7 @@ public class DividendRaw {
                        Date date,
                        Date exDividendDate,
                        Date paymentDate,
-                       int quantity,
+                       double quantity,
                        double tax,
                        double payment,
                        double divPerShare,
@@ -67,7 +67,7 @@ public class DividendRaw {
         return paymentDate;
     }
 
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
