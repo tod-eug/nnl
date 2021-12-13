@@ -30,13 +30,8 @@ public class CalculateCommand implements IBotCommand {
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(response);
-
-        SendMessage sendMeReport = new SendMessage();
-        sendMeReport.setChatId(message.getChatId().toString());
-        sendMeReport.setText(Constants.WAIT_INCOME_FILE);
         try {
             absSender.execute(sm);
-            absSender.execute(sendMeReport);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
