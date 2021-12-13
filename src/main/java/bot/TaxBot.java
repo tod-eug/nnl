@@ -70,6 +70,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
                     deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
             }
+            sendMsg(update.getCallbackQuery().getMessage().getChatId(), Constants.WAIT_INCOME_FILE);
         }
         Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);
 
