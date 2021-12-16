@@ -11,4 +11,5 @@ public interface Constants {
     String USE_CALCULATE_COMMAND = "Для расчета воспользуйтесь командой /calculate";
     String PROCESSING = "Произвожу расчеты...";
     String WRONG_FILE_FORMAT = "Файл не распознан как отчет Interactive Brokers в формате htm";
+    String SUBSCRIPTION_EXPIRED = "Извините период вашей подписки истек. Оплатите подписку заново.";
 }
