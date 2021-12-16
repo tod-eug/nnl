@@ -1,16 +1,15 @@
 package bot;
 
-import bot.commands.CalculateCommand;
-import bot.commands.CancelCommand;
-import bot.commands.FormatCommand;
-import bot.commands.StartCommand;
+import bot.commands.*;
 import bot.enums.Format;
 import bot.enums.State;
 import controller.TaxesController;
+import db.AccessibilityHelper;
 import db.FormatHelper;
 import db.UsersHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -37,6 +36,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         register(new CalculateCommand());
         register(new FormatCommand());
         register(new CancelCommand());
+        register(new SubscriptionCommand());
     }
 
     @Override
@@ -58,6 +58,10 @@ public class TaxBot extends TelegramLongPollingCommandBot {
     public void processNonCommandUpdate(Update update) {
         FormatHelper ufh = new FormatHelper();
 
+        if (update.hasPreCheckoutQuery()) {
+            sendAnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
+        }
+
         if (update.hasCallbackQuery()) {
             switch (update.getCallbackQuery().getData().toLowerCase(Locale.ROOT)) {
                 case "pdf":
@@ -72,6 +76,12 @@ public class TaxBot extends TelegramLongPollingCommandBot {
             }
             sendMsg(update.getCallbackQuery().getMessage().getChatId(), Constants.WAIT_INCOME_FILE);
         }
+
+        if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
+            AccessibilityHelper accessibilityHelper = new AccessibilityHelper();
+            accessibilityHelper.setFinalDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
+        }
+
         Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);
 
         State state = State.FREE;
@@ -144,6 +154,17 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         answerCallbackQuery.setShowAlert(success);
         try {
             execute(answerCallbackQuery);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendAnswerPreCheckoutQuery(String id, Boolean success) {
+        AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery();
+        answerPreCheckoutQuery.setOk(success);
+        answerPreCheckoutQuery.setPreCheckoutQueryId(id);
+        try {
+            execute(answerPreCheckoutQuery);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
