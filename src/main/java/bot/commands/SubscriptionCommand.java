@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import util.PropertiesProvider;
 
 import java.text.SimpleDateFormat;
@@ -47,6 +46,7 @@ public class SubscriptionCommand implements IBotCommand {
         int amount = Integer.parseInt(PropertiesProvider.configurationProperties.get("amount"));
         LabeledPrice price = new LabeledPrice(Constants.INVOICE_ITEM_TITLE, amount * 100);
 
+        MessageProcessor mp = new MessageProcessor();
         SendInvoice si = SendInvoice.builder()
                 .chatId(message.getChatId().toString())
                 .title(Constants.INVOICE_TITLE)
@@ -57,24 +57,16 @@ public class SubscriptionCommand implements IBotCommand {
                 .currency(PropertiesProvider.configurationProperties.get("currency"))
                 .price(price)
                 .build();
-        try {
-            absSender.execute(si);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        mp.sendInvoice(absSender, si);
     }
 
     private void subscriptionStillValid(AbsSender absSender, Message message, Date subscriptionEndDate) {
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
 
+        MessageProcessor mp = new MessageProcessor();
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(Constants.SUBSCRIPTION_STILL_VALID + formatter.format(subscriptionEndDate));
-
-        try {
-            absSender.execute(sm);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        mp.sendMsg(absSender, sm);
     }
 }

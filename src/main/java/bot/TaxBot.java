@@ -56,89 +56,109 @@ public class TaxBot extends TelegramLongPollingCommandBot {
     }
 
     @Override
-    public void processNonCommandUpdate(Update update) {
-        FormatHelper ufh = new FormatHelper();
+    public void onUpdatesReceived(List<Update> updates) {
+        super.onUpdatesReceived(updates);
+    }
 
-        if (update.hasPreCheckoutQuery()) {
-            sendAnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
-            CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
-            checkoutsHelper.savePreCheckout(update.getPreCheckoutQuery());
-        }
+    @Override
+    public void processNonCommandUpdate(Update update) {
+        FormatHelper fh = new FormatHelper();
 
         if (update.hasCallbackQuery()) {
-            switch (update.getCallbackQuery().getData().toLowerCase(Locale.ROOT)) {
-                case "pdf":
-                    ufh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.pdf);
-                    sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
-                    deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
-                    break;
-                case "xlsx":
-                    ufh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.xlsx);
-                    sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
-                    deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
-            }
+            processCallbackQuery(update, fh);
+        }
+
+        if (update.hasPreCheckoutQuery()) {
+            processPreCheckoutQuery(update);
         }
 
         if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
-            SubscriptionsHelper accessibilityHelper = new SubscriptionsHelper();
-            accessibilityHelper.setSubscriptionEndDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
-            CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
-            checkoutsHelper.updateCheckoutWithPayment(update.getMessage().getSuccessfulPayment());
+            processSuccessfulPayment(update);
         }
-
-        Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);
 
         State state = State.FREE;
         if (stateMap.containsKey(update.getMessage().getChatId()))
             state = stateMap.get(update.getMessage().getChatId());
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            if (state.equals(State.CALCULATE)) {
-                sendMsg(update.getMessage().getChatId(), Constants.WAIT_INCOME_FILE);
-            } else {
-                sendMsg(update.getMessage().getChatId(), Constants.USE_CALCULATE_COMMAND);
-            }
+            processEmptyMessage(update, state);
         }
+
         if (update.getMessage().hasDocument()) {
             if (state.equals(State.CALCULATE)) {
-                UsersHelper uh = new UsersHelper();
-                String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString(), update.getMessage().getFrom());
-
-                String uploadedFilePath = getFilePath(update);
-                File gotFile = getFile(uploadedFilePath);
-
-                IBReportValidator ibReportValidator = new IBReportValidator();
-                if (ibReportValidator.isFileIBReport(gotFile)) {
-                    //send message "Working on it"
-                    sendMsg(update.getMessage().getChatId(), Constants.PROCESSING);
-
-                    //calculations
-                    TaxesController taxesController = new TaxesController();
-                    File file = taxesController.getCalculatedTaxes(gotFile, userId, format);
-                    InputFile inputFile = new InputFile(file);
-
-                    SendDocument document = new SendDocument();
-                    document.setChatId(update.getMessage().getChatId().toString());
-                    document.setDocument(inputFile);
-                    document.setCaption(file.getName());
-                    try {
-                        execute(document);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                    stateMap.put(update.getMessage().getChatId(), State.FREE);
-                } else {
-                    sendMsg(update.getMessage().getChatId(), Constants.WRONG_FILE_FORMAT);
-                }
+                processDocument(update, fh);
             } else {
                 sendMsg(update.getMessage().getChatId(), Constants.USE_CALCULATE_COMMAND);
             }
         }
     }
 
-    @Override
-    public void onUpdatesReceived(List<Update> updates) {
-        super.onUpdatesReceived(updates);
+    private void processPreCheckoutQuery(Update update) {
+        sendAnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
+        CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
+        checkoutsHelper.savePreCheckout(update.getPreCheckoutQuery());
+    }
+
+    private void processSuccessfulPayment(Update update) {
+        SubscriptionsHelper subscriptionsHelper = new SubscriptionsHelper();
+        subscriptionsHelper.setSubscriptionEndDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
+        CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
+        checkoutsHelper.updateCheckoutWithPayment(update.getMessage().getSuccessfulPayment());
+    }
+
+    private void processCallbackQuery(Update update, FormatHelper fh) {
+        switch (update.getCallbackQuery().getData().toLowerCase(Locale.ROOT)) {
+            case "pdf":
+                fh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.pdf);
+                sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
+                deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
+                break;
+            case "xlsx":
+                fh.setFormat(update.getCallbackQuery().getMessage().getChatId(), Format.xlsx);
+                sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
+                deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
+        }
+    }
+
+    private void processDocument(Update update, FormatHelper fh) {
+        Format format = fh.getFormat(update.getMessage().getChatId(), Format.pdf);
+        UsersHelper uh = new UsersHelper();
+        String userId = uh.findUserByTgId(update.getMessage().getFrom().getId().toString(), update.getMessage().getFrom());
+
+        String uploadedFilePath = getFilePath(update);
+        File gotFile = getFile(uploadedFilePath);
+
+        IBReportValidator ibReportValidator = new IBReportValidator();
+        if (ibReportValidator.isFileIBReport(gotFile)) {
+            //send message "Working on it"
+            sendMsg(update.getMessage().getChatId(), Constants.PROCESSING);
+
+            //calculations
+            TaxesController taxesController = new TaxesController();
+            File file = taxesController.getCalculatedTaxes(gotFile, userId, format);
+            InputFile inputFile = new InputFile(file);
+
+            SendDocument document = new SendDocument();
+            document.setChatId(update.getMessage().getChatId().toString());
+            document.setDocument(inputFile);
+            document.setCaption(file.getName());
+            try {
+                execute(document);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            stateMap.put(update.getMessage().getChatId(), State.FREE);
+        } else {
+            sendMsg(update.getMessage().getChatId(), Constants.WRONG_FILE_FORMAT);
+        }
+    }
+
+    private void processEmptyMessage(Update update, State state) {
+        if (state.equals(State.CALCULATE)) {
+            sendMsg(update.getMessage().getChatId(), Constants.WAIT_INCOME_FILE);
+        } else {
+            sendMsg(update.getMessage().getChatId(), Constants.USE_CALCULATE_COMMAND);
+        }
     }
 
     private void sendMsg(long chatId, String text) {

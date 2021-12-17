@@ -10,7 +10,6 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class StartCommand implements IBotCommand {
 
@@ -26,6 +25,7 @@ public class StartCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+        MessageProcessor mp = new MessageProcessor();
         UsersHelper uh = new UsersHelper();
         FormatHelper ufh = new FormatHelper();
         String userId = uh.findUserByTgId(message.getFrom().getId().toString(), message.getFrom());
@@ -34,11 +34,8 @@ public class StartCommand implements IBotCommand {
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(response);
-        try {
-            absSender.execute(sm);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        mp.sendMsg(absSender, sm);
+
         ufh.setFormat(message.getChatId(), Format.pdf);
         TaxBot.stateMap.put(message.getChatId(), State.FREE);
     }

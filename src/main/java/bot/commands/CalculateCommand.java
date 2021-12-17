@@ -10,7 +10,6 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import util.PropertiesProvider;
 
 import java.util.Date;
@@ -41,34 +40,28 @@ public class CalculateCommand implements IBotCommand {
     }
 
     private void subscriptionInvalid(AbsSender absSender, Message message) {
+        MessageProcessor mp = new MessageProcessor();
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(Constants.SUBSCRIPTION_EXPIRED);
-
-        try {
-            absSender.execute(sm);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        mp.sendMsg(absSender, sm);
     }
 
     private void subscriptionValid(AbsSender absSender, Message message) {
+        MessageProcessor mp = new MessageProcessor();
         FormatHelper ufh = new FormatHelper();
         Format format = ufh.getFormat(message.getChatId(), Format.pdf);
         String response = Constants.CALCULATE_REPLY_PART_1 + format + Constants.CALCULATE_REPLY_PART_2;
         SendMessage sm = new SendMessage();
         sm.setChatId(message.getChatId().toString());
         sm.setText(response);
+        mp.sendMsg(absSender, sm);
 
         SendMessage sendMeReport = new SendMessage();
         sendMeReport.setChatId(message.getChatId().toString());
         sendMeReport.setText(Constants.WAIT_INCOME_FILE);
-        try {
-            absSender.execute(sm);
-            absSender.execute(sendMeReport);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        mp.sendMsg(absSender, sendMeReport);
+
         TaxBot.stateMap.put(message.getChatId(), State.CALCULATE);
     }
 }
