@@ -4,7 +4,7 @@ import bot.commands.*;
 import bot.enums.Format;
 import bot.enums.State;
 import controller.TaxesController;
-import db.AccessibilityHelper;
+import db.SubscriptionsHelper;
 import db.FormatHelper;
 import db.UsersHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -77,8 +77,8 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         }
 
         if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
-            AccessibilityHelper accessibilityHelper = new AccessibilityHelper();
-            accessibilityHelper.setFinalDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
+            SubscriptionsHelper accessibilityHelper = new SubscriptionsHelper();
+            accessibilityHelper.setSubscriptionEndDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
         }
 
         Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);

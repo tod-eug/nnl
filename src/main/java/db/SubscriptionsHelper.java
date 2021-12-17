@@ -10,19 +10,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class AccessibilityHelper {
+public class SubscriptionsHelper {
 
     private static final String pattern = "yyyy-MM-dd HH:mm:ss";
 
-    public void setFinalDate(long tgIdLong, long chatIdLong) {
+    public void setSubscriptionEndDate(long tgIdLong, long chatIdLong) {
 
         String query = "";
         String tgId = Long.toString(tgIdLong);
         String chatId = Long.toString(chatIdLong);
-        Date existingEndDate = getEndDateByTgId(tgIdLong);
+        Date existingEndDate = getSubscriptionEndDateByTgId(tgIdLong);
 
         if (existingEndDate.before(new Date())) {
-            String deleteQuery = String.format("delete from public.accessibility where tg_id = '%s';", tgId);
+            String deleteQuery = String.format("delete from public.subscriptions where tg_id = '%s';", tgId);
             DatabaseHelper dbHelper = new DatabaseHelper();
             try {
                 dbHelper.getPreparedStatement(deleteQuery).execute();
@@ -38,7 +38,7 @@ public class AccessibilityHelper {
         String createdDate = formatter.format(new Date());
         String endDate = formatter.format(adjustFinalDate(new Date()));
 
-        query = String.format("insert into public.accessibility (id, tg_id, chat_id, created_date, end_date) VALUES ('%s', '%s', '%s', '%s', '%s');",
+        query = String.format("insert into public.subscriptions (id, tg_id, chat_id, created_date, end_date) VALUES ('%s', '%s', '%s', '%s', '%s');",
                 id, tgId, chatId, createdDate, endDate);
 
         DatabaseHelper dbHelper = new DatabaseHelper();
@@ -51,9 +51,9 @@ public class AccessibilityHelper {
         }
     }
 
-    public Date getEndDateByTgId(long tgIdLong) {
+    public Date getSubscriptionEndDateByTgId(long tgIdLong) {
         String tgId = Long.toString(tgIdLong);
-        String selectQuery = String.format("select end_date from public.accessibility where tg_id = '%s';", tgId);
+        String selectQuery = String.format("select end_date from public.subscriptions where tg_id = '%s';", tgId);
 
         DatabaseHelper dbHelper = new DatabaseHelper();
         DateUtil dateUtil = new DateUtil();

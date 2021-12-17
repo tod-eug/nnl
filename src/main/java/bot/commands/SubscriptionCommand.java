@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Constants;
-import db.AccessibilityHelper;
+import db.SubscriptionsHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -33,8 +33,8 @@ public class SubscriptionCommand implements IBotCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
 
-        AccessibilityHelper ah = new AccessibilityHelper();
-        Date subscriptionEndDate = ah.getEndDateByTgId(message.getFrom().getId());
+        SubscriptionsHelper ah = new SubscriptionsHelper();
+        Date subscriptionEndDate = ah.getSubscriptionEndDateByTgId(message.getFrom().getId());
 
         if (subscriptionEndDate.before(new Date())) {
             subscribe(absSender, message);

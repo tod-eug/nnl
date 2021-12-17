@@ -4,7 +4,7 @@ import bot.Constants;
 import bot.enums.Format;
 import bot.enums.State;
 import bot.TaxBot;
-import db.AccessibilityHelper;
+import db.SubscriptionsHelper;
 import db.FormatHelper;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -30,8 +30,8 @@ public class CalculateCommand implements IBotCommand {
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         boolean payments = Boolean.parseBoolean(PropertiesProvider.configurationProperties.get("payments"));
         if (payments) {
-            AccessibilityHelper ah = new AccessibilityHelper();
-            if (ah.getEndDateByTgId(message.getFrom().getId()).before(new Date()))
+            SubscriptionsHelper ah = new SubscriptionsHelper();
+            if (ah.getSubscriptionEndDateByTgId(message.getFrom().getId()).before(new Date()))
                 subscriptionInvalid(absSender, message);
             else
                 subscriptionValid(absSender, message);
