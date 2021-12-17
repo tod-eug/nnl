@@ -15,7 +15,6 @@ public class PropertiesProvider {
     public static void setup() {
         loadConfigs("src/main/resources/bot.properties");
         loadConfigs("src/main/resources/db.properties");
-        loadConfigs("src/main/resources/parameters.properties");
         loadConfigs("src/main/resources/payments.properties");
     }
 
