@@ -27,7 +27,7 @@ public class SubscriptionCommand implements IBotCommand {
 
     @Override
     public String getDescription() {
-        return "Buy subscription";
+        return "Subscription status and purchase";
     }
 
     @Override
