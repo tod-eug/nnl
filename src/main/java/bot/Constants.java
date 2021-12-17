@@ -17,14 +17,14 @@ public interface Constants {
     String USE_CALCULATE_COMMAND = "Для расчета воспользуйтесь командой /calculate";
     String PROCESSING = "Произвожу расчеты...";
     String WRONG_FILE_FORMAT = "Файл не распознан как отчет Interactive Brokers в формате htm";
-    String SUBSCRIPTION_EXPIRED = "Извините период вашей подписки истек. Оплатите подписку заново.";
+    String SUBSCRIPTION_EXPIRED = "Извините у вас отстутствует активная подписка. Оплатите подписку с помощью команды /subscription";
     String SUBSCRIPTION_STILL_VALID = "Ваша подписка активна до: ";
 
     /**
      * Strings for invoice
      */
     String INVOICE_ITEM_TITLE = "Подписка на 10 дней";
-    String INVOICE_TITLE = "Расчет налогов для отчета IB";
-    String INVOICE_DESCRIPTION = "Расчет налогов для отчета IB";
+    String INVOICE_TITLE = "Расчет налогов для отчетов IB";
+    String INVOICE_DESCRIPTION = "Подписка позволяет пользоваться ботом в течение 10 дней без ограничений по количеству расчетов.";
     String INVOICE_START_PARAMETER = "start";
 }
