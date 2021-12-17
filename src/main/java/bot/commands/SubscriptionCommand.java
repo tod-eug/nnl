@@ -13,7 +13,7 @@ import util.PropertiesProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.UUID;
 
 
 public class SubscriptionCommand implements IBotCommand {
@@ -51,7 +51,7 @@ public class SubscriptionCommand implements IBotCommand {
                 .chatId(message.getChatId().toString())
                 .title(Constants.INVOICE_TITLE)
                 .description(Constants.INVOICE_DESCRIPTION)
-                .payload("payload")
+                .payload(UUID.randomUUID().toString())
                 .providerToken(PropertiesProvider.configurationProperties.get("paymentToken"))
                 .startParameter(Constants.INVOICE_START_PARAMETER)
                 .currency(PropertiesProvider.configurationProperties.get("currency"))

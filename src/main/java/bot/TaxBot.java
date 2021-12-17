@@ -4,6 +4,7 @@ import bot.commands.*;
 import bot.enums.Format;
 import bot.enums.State;
 import controller.TaxesController;
+import db.CheckoutsHelper;
 import db.SubscriptionsHelper;
 import db.FormatHelper;
 import db.UsersHelper;
@@ -60,6 +61,8 @@ public class TaxBot extends TelegramLongPollingCommandBot {
 
         if (update.hasPreCheckoutQuery()) {
             sendAnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
+            CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
+            checkoutsHelper.savePreCheckout(update.getPreCheckoutQuery());
         }
 
         if (update.hasCallbackQuery()) {
@@ -79,6 +82,8 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
             SubscriptionsHelper accessibilityHelper = new SubscriptionsHelper();
             accessibilityHelper.setSubscriptionEndDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
+            CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
+            checkoutsHelper.updateCheckoutWithPayment(update.getMessage().getSuccessfulPayment());
         }
 
         Format format = ufh.getFormat(update.getMessage().getChatId(), Format.pdf);
