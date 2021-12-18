@@ -1,8 +1,14 @@
 package db;
 
+import bot.TaxBot;
+
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DocumentsHelper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public void createRawDocument(String id, String userId, String filename) {
         String insertQuery = String.format("insert into raw_documents (id, user_id, filename) VALUES ('%s', '%s', '%s');",
@@ -12,7 +18,7 @@ public class DocumentsHelper {
         try {
             dbHelper.getPreparedStatement(insertQuery).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while createRawDocument. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }
@@ -26,7 +32,7 @@ public class DocumentsHelper {
         try {
             dbHelper.getPreparedStatement(insertQuery).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while createProcessedDocument. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }

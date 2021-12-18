@@ -26,9 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TaxBot extends TelegramLongPollingCommandBot {
 
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
     public static Map<Long, State> stateMap = new HashMap<>();
 
     public TaxBot() {
@@ -97,6 +100,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         sendAnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
         CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
         checkoutsHelper.savePreCheckout(update.getPreCheckoutQuery());
+        log.info("PreCheckout Query processed");
     }
 
     private void processSuccessfulPayment(Update update) {
@@ -104,6 +108,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         subscriptionsHelper.setSubscriptionEndDate(update.getMessage().getFrom().getId(), update.getMessage().getChatId());
         CheckoutsHelper checkoutsHelper = new CheckoutsHelper();
         checkoutsHelper.updateCheckoutWithPayment(update.getMessage().getSuccessfulPayment());
+        log.info("Successful Payment processed for user: " + update.getMessage().getFrom().getId());
     }
 
     private void processCallbackQuery(Update update, FormatHelper fh) {
@@ -118,6 +123,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
                 sendAnswerCallbackQuery(update.getCallbackQuery().getId(), true);
                 deleteMessage(update.getCallbackQuery().getMessage().getChatId(), update.getCallbackQuery().getMessage().getMessageId());
         }
+        log.info("File format defined for user: " + update.getCallbackQuery().getMessage().getChatId());
     }
 
     private void processDocument(Update update, FormatHelper fh) {
@@ -145,11 +151,13 @@ public class TaxBot extends TelegramLongPollingCommandBot {
             try {
                 execute(document);
             } catch (TelegramApiException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Error while sending document. Exception: ", e);
             }
             stateMap.put(update.getMessage().getChatId(), State.FREE);
+            log.info("File processed for user: " + update.getMessage().getFrom().getId());
         } else {
             sendMsg(update.getMessage().getChatId(), Constants.WRONG_FILE_FORMAT);
+            log.info("Wrong file was sent by the user: " + update.getMessage().getFrom().getId());
         }
     }
 
@@ -168,7 +176,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         try {
             execute(sm);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while sending message. Exception: ", e);
         }
     }
 
@@ -179,7 +187,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         try {
             execute(answerCallbackQuery);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while sending AnswerCallbackQuery. Exception: ", e);
         }
     }
 
@@ -190,7 +198,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         try {
             execute(answerPreCheckoutQuery);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while sending PreCheckoutQuery. Exception: ", e);
         }
     }
 
@@ -201,7 +209,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         try {
             execute(deleteMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while deleting message. Exception: ", e);
         }
     }
 
@@ -214,7 +222,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
             org.telegram.telegrambots.meta.api.objects.File file = execute(uploadedFile);
             uploadedFilePath = file.getFilePath();
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while getting file path. Exception: ", e);
         }
         return uploadedFilePath;
     }
@@ -224,7 +232,7 @@ public class TaxBot extends TelegramLongPollingCommandBot {
         try {
             file = downloadFile(uploadedFilePath);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while downloading file. Exception: ", e);
         }
         return file;
     }

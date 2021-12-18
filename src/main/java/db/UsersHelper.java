@@ -1,12 +1,17 @@
 package db;
 
+import bot.TaxBot;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UsersHelper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public String createUser(User user) {
 
@@ -27,7 +32,7 @@ public class UsersHelper {
         try {
             dbHelper.getPreparedStatement(insertQuery).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while createUser. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }
@@ -45,7 +50,7 @@ public class UsersHelper {
                 id = st.getString(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while findUserByTgId. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }

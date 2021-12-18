@@ -1,5 +1,6 @@
 package mapper;
 
+import bot.TaxBot;
 import dto.TradeRaw;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -9,8 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TradesMapper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public TradeRaw mapTrade(String instrument, String currency, Element element) {
         Elements tds = element.select("td");
@@ -19,7 +24,7 @@ public class TradesMapper {
         try {
             date = new SimpleDateFormat("yyyy-MM-dd, hh:mm:ss").parse(tds.get(1).ownText());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while parsing dates in trades. Exception: ", e);
         }
 
         double closePrice = 0.0;

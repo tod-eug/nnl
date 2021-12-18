@@ -1,5 +1,6 @@
 package output.pdf;
 
+import bot.TaxBot;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import dto.DocumentCalculated;
@@ -8,8 +9,12 @@ import util.FilesUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TPdfWriter {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public static final String doubleFormatPattern = "####0.00";
     public static final String datePattern = "dd.MM.yyyy";
@@ -29,7 +34,7 @@ public class TPdfWriter {
         try {
             PdfWriter.getInstance(document, new FileOutputStream(file));
         } catch (DocumentException | FileNotFoundException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while write pdf. Exception: ", e);
         }
 
         document.setPageSize(PageSize.A4.rotate());

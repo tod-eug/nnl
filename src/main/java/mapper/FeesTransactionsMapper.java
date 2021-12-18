@@ -1,5 +1,6 @@
 package mapper;
 
+import bot.TaxBot;
 import dto.FeesTransactionsRaw;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -9,8 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FeesTransactionsMapper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
+
     public FeesTransactionsRaw mapFeesTransactions(String instrument, String currency, Element element) {
         Elements tds = element.select("td");
 
@@ -18,7 +24,7 @@ public class FeesTransactionsMapper {
         try {
             date = new SimpleDateFormat("yyyy-MM-dd, hh:mm:ss").parse(tds.get(0).ownText());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while parsing dates in fees transactions. Exception: ", e);
         }
 
         double quantity = 0.0;

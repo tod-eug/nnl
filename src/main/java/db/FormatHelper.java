@@ -1,13 +1,18 @@
 package db;
 
+import bot.TaxBot;
 import bot.enums.Format;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FormatHelper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public Format getFormat(long chatId, Format format) {
         String f = getFormatByChatId(chatId);
@@ -44,7 +49,7 @@ public class FormatHelper {
         try {
             dbHelper.getPreparedStatement(query).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while setFormat. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }
@@ -62,7 +67,7 @@ public class FormatHelper {
                 format = st.getString(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while getFormatByChatId. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }

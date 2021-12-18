@@ -1,5 +1,6 @@
 package currency;
 
+import bot.TaxBot;
 import dto.ExchangeRate;
 import mapper.ExchangeRatesMapper;
 import org.w3c.dom.Document;
@@ -14,8 +15,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ExchangeRatesProvider {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     /**
      * Method return Map<Currency, Map<Date, ExchangeRate>> with exchange rates for necessary currencies in the necessary dates range
@@ -88,7 +93,7 @@ public class ExchangeRatesProvider {
             dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(centralBankDataProvider.getExchangeRatesRange(CBRCurrencyCodesProvider.getCurrencyCBRCode(currency), start, end));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while parsing exchange rates from central bank response. Exception: ", e);
         }
         return doc;
     }

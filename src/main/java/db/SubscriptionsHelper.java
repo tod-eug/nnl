@@ -1,5 +1,6 @@
 package db;
 
+import bot.TaxBot;
 import util.DateUtil;
 import util.PropertiesProvider;
 
@@ -9,9 +10,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SubscriptionsHelper {
 
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
     private static final String pattern = "yyyy-MM-dd HH:mm:ss";
 
     public void setSubscriptionEndDate(long tgIdLong, long chatIdLong) {
@@ -27,7 +31,7 @@ public class SubscriptionsHelper {
             try {
                 dbHelper.getPreparedStatement(deleteQuery).execute();
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Error while deleteSubscriptionByTgId. Exception: ", e);
             } finally {
                 dbHelper.closeConnections();
             }
@@ -45,7 +49,7 @@ public class SubscriptionsHelper {
         try {
             dbHelper.getPreparedStatement(query).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while setSubscriptionEndDate. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }
@@ -65,7 +69,7 @@ public class SubscriptionsHelper {
                 endDate = formatter.parse(st.getString(1));
             }
         } catch (SQLException | ParseException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while getSubscriptionEndDateByTgId. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }

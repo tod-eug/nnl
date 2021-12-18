@@ -15,8 +15,13 @@ import util.PropertiesProvider;
 
 import java.io.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SimpleTaxBot extends TelegramLongPollingBot {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
+
     @Override
     public String getBotUsername() {
         return PropertiesProvider.configurationProperties.get("BotName");
@@ -45,7 +50,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, "Error while sending message. Exception: ", e);
                 }
             }
             String response = "Для старта расчета просто пришли мне отчет Interactive Brokers в формате htm";
@@ -55,7 +60,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
             try {
                 execute(message);
             } catch (TelegramApiException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Error while sending message. Exception: ", e);
             }
         }
 
@@ -75,7 +80,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, "Error while sending message. Exception: ", e);
                 }
                 //calculations
                 TaxesController taxesController = new TaxesController();
@@ -89,7 +94,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
                 try {
                     execute(document);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, "Error while sending document. Exception: ", e);
                 }
             } else {
                 String response = "Файл не распознан как отчет Interactive Brokers в формате htm";
@@ -99,7 +104,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, "Error while sending message. Exception: ", e);
                 }
             }
         }
@@ -119,7 +124,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
             org.telegram.telegrambots.meta.api.objects.File file = execute(uploadedFile);
             uploadedFilePath = file.getFilePath();
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while getting file path. Exception: ", e);
         }
         return uploadedFilePath;
     }
@@ -129,7 +134,7 @@ public class SimpleTaxBot extends TelegramLongPollingBot {
         try {
             file = downloadFile(uploadedFilePath);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while downloading file. Exception: ", e);
         }
         return file;
     }

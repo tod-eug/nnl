@@ -1,5 +1,6 @@
 package db;
 
+import bot.TaxBot;
 import org.telegram.telegrambots.meta.api.objects.payments.PreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 
@@ -7,9 +8,12 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CheckoutsHelper {
 
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
     private static final String pattern = "yyyy-MM-dd HH:mm:ss";
 
     public void savePreCheckout(PreCheckoutQuery preCheckoutQuery) {
@@ -26,7 +30,7 @@ public class CheckoutsHelper {
         try {
             dbHelper.getPreparedStatement(query).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while savePreCheckout. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }
@@ -42,7 +46,7 @@ public class CheckoutsHelper {
         try {
             dbHelper.getPreparedStatement(query).execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while updateCheckoutWithPayment. Exception: ", e);
         } finally {
             dbHelper.closeConnections();
         }

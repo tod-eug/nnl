@@ -3,8 +3,10 @@
 build
 processed
 raw
+logs
 U3434582.htm
 Taxes.xlsx
 src/main/resources/bot.properties
 src/main/resources/db.properties
 src/main/resources/payments.properties
+src/main/resources/logging.properties

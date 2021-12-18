@@ -1,5 +1,6 @@
 package mapper;
 
+import bot.TaxBot;
 import dto.DividendRaw;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -9,8 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DividendMapper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     public DividendRaw mapDividend(String currency, Element element) {
         Elements tds = element.select("td");
@@ -24,7 +29,7 @@ public class DividendMapper {
             exDividendDate = new SimpleDateFormat("yyyy-MM-dd").parse(tds.get(2).ownText());
             paymentDate = new SimpleDateFormat("yyyy-MM-dd").parse(tds.get(3).ownText());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while parsing dates in dividends. Exception: ", e);
         }
 
         double quantity = Double.parseDouble(tds.get(4).ownText().replace(",", ""));

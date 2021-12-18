@@ -1,10 +1,15 @@
 package db;
 
+import bot.TaxBot;
 import util.PropertiesProvider;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DatabaseHelper {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     private final String url;
     private final String user;
@@ -28,7 +33,7 @@ public class DatabaseHelper {
             preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             return preparedStatement;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while preparing statement. Exception: ", e);
             throw new RuntimeException("Can not prepare statement for sql=" + sql);
         }
     }
@@ -45,7 +50,7 @@ public class DatabaseHelper {
             statement = null;
             connection = null;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while closing connection for db. Exception: ", e);
         }
     }
 
@@ -56,7 +61,7 @@ public class DatabaseHelper {
             }
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while creating connection for db. Exception: ", e);
         }
     }
 }

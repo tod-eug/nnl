@@ -1,5 +1,6 @@
 package output.pdf;
 
+import bot.TaxBot;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -9,9 +10,13 @@ import dto.FeesTransactionsCalculated;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class FeesTransactionsWriter {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     private static final int numberOfColumns = 7;
     private static final int resultHeaderColSpan = 6;
@@ -44,7 +49,7 @@ public class FeesTransactionsWriter {
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while write fees transactions in pdf. Exception: ", e);
         }
         return document;
     }

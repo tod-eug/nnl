@@ -1,5 +1,6 @@
 package output.pdf;
 
+import bot.TaxBot;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -12,9 +13,13 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class TradesWriter {
+
+    private static Logger log = Logger.getLogger(TaxBot.class.getName());
 
     private static final int numberOfColumns = 9;
     private static final int tradeResultHeaderColSpan = 4;
@@ -91,7 +96,7 @@ public class TradesWriter {
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error while write trades in pdf. Exception: ", e);
         }
 
         return document;
