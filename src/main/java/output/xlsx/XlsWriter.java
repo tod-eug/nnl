@@ -22,8 +22,7 @@ public class XlsWriter {
         FilesUtils fileUtils = new FilesUtils();
         XSSFSheet interestsAndFeesSheet;
 
-        if (documentCalculated.getFinalTaxResult() > 0.0)
-            workbook = summaryWriter.writeSummary(documentCalculated, workbook);
+        workbook = summaryWriter.writeSummary(documentCalculated, workbook);
         if (documentCalculated.getDividends().size() > 0)
             workbook = dividendWriter.writeDividends(documentCalculated, workbook);
         if (documentCalculated.getTrades().size() > 0)

@@ -142,19 +142,21 @@ public class TaxBot extends TelegramLongPollingCommandBot {
             //calculations
             TaxesController taxesController = new TaxesController();
             File file = taxesController.getCalculatedTaxes(gotFile, userId, format);
-            InputFile inputFile = new InputFile(file);
+            if (file != null) {
+                InputFile inputFile = new InputFile(file);
 
-            SendDocument document = new SendDocument();
-            document.setChatId(update.getMessage().getChatId().toString());
-            document.setDocument(inputFile);
-            document.setCaption(file.getName());
-            try {
-                execute(document);
-            } catch (TelegramApiException e) {
-                log.log(Level.SEVERE, "Error while sending document. Exception: ", e);
+                SendDocument document = new SendDocument();
+                document.setChatId(update.getMessage().getChatId().toString());
+                document.setDocument(inputFile);
+                document.setCaption(file.getName());
+                try {
+                    execute(document);
+                } catch (TelegramApiException e) {
+                    log.log(Level.SEVERE, "Error while sending document. Exception: ", e);
+                }
+                stateMap.put(update.getMessage().getChatId(), State.FREE);
+                log.info("File processed for user: " + update.getMessage().getFrom().getId());
             }
-            stateMap.put(update.getMessage().getChatId(), State.FREE);
-            log.info("File processed for user: " + update.getMessage().getFrom().getId());
         } else {
             sendMsg(update.getMessage().getChatId(), Constants.WRONG_FILE_FORMAT);
             log.info("Wrong file was sent by the user: " + update.getMessage().getFrom().getId());

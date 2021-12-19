@@ -37,39 +37,41 @@ public class TaxesController {
         InterestParser interestParser = new InterestParser();
         FeesParser feesParser = new FeesParser();
         FeesTransactionsParser feesTransactionsParser = new FeesTransactionsParser();
-
-        ArrayList<DividendRaw> dividendList = dividendParser.parseDividends(doc);
-        ArrayList<TradeRaw> tradesList = tradesParser.parseTrades(doc);
-        ArrayList<InterestRaw> interestList = interestParser.parseInterest(doc);
-        ArrayList<FeesRaw> feesList = feesParser.parseFees(doc);
-        ArrayList<FeesTransactionsRaw> feesTransactionsList = feesTransactionsParser.parseFeesTransactions(doc);
-
-        //request exchange rates for all currencies in dates range
-        Map<String, Date> datesRange = getDatesRange(dividendList, tradesList, interestList, feesList, feesTransactionsList);
-        List<String> currencies = getListOfCurrencies(dividendList, tradesList, interestList, feesList, feesTransactionsList);
-
-        ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
-        Map<String, Map<Date, ExchangeRate>> exchangeRates = exchangeRatesProvider.getExchangeRates(currencies, datesRange);
-
-        //calculate document
-        DocumentCalculated documentCalculated = calculate(dividendList, tradesList, interestList, feesList, feesTransactionsList, exchangeRates);
-
-        //write results in file and save file
-        String uuidProcessedFile = UUID.randomUUID().toString();
-        String processedFileName = ".pdf";
-        TPdfWriter tPdfWriter = new TPdfWriter();
         File file = null;
-        switch (format) {
-            case pdf:
-                processedFileName = uuidProcessedFile + ".pdf";
-                file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
-                break;
-            case xlsx:
-                processedFileName = uuidProcessedFile + ".xlsx";
-                file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
-                break;
+
+        if (doc != null) {
+            ArrayList<DividendRaw> dividendList = dividendParser.parseDividends(doc);
+            ArrayList<TradeRaw> tradesList = tradesParser.parseTrades(doc);
+            ArrayList<InterestRaw> interestList = interestParser.parseInterest(doc);
+            ArrayList<FeesRaw> feesList = feesParser.parseFees(doc);
+            ArrayList<FeesTransactionsRaw> feesTransactionsList = feesTransactionsParser.parseFeesTransactions(doc);
+
+            //request exchange rates for all currencies in dates range
+            Map<String, Date> datesRange = getDatesRange(dividendList, tradesList, interestList, feesList, feesTransactionsList);
+            List<String> currencies = getListOfCurrencies(dividendList, tradesList, interestList, feesList, feesTransactionsList);
+
+            ExchangeRatesProvider exchangeRatesProvider = new ExchangeRatesProvider();
+            Map<String, Map<Date, ExchangeRate>> exchangeRates = exchangeRatesProvider.getExchangeRates(currencies, datesRange);
+
+            //calculate document
+            DocumentCalculated documentCalculated = calculate(dividendList, tradesList, interestList, feesList, feesTransactionsList, exchangeRates);
+
+            //write results in file and save file
+            String uuidProcessedFile = UUID.randomUUID().toString();
+            String processedFileName = ".pdf";
+            TPdfWriter tPdfWriter = new TPdfWriter();
+            switch (format) {
+                case pdf:
+                    processedFileName = uuidProcessedFile + ".pdf";
+                    file = tPdfWriter.writePdfFile(documentCalculated, processedFileName);
+                    break;
+                case xlsx:
+                    processedFileName = uuidProcessedFile + ".xlsx";
+                    file = XlsWriter.writeXlsFile(documentCalculated, processedFileName);
+                    break;
+            }
+            dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         }
-        dHelper.createProcessedDocument(uuidProcessedFile, userId, uuidRawFile, processedFileName);
         return file;
     }
 
@@ -151,8 +153,8 @@ public class TaxesController {
                                             ArrayList<FeesTransactionsRaw> feesTransactionsList) {
         DateUtil dateUtil = new DateUtil();
         Map<String, Date> result = new HashMap<>();
-        Date from = dividendList.get(0).getDate();
-        Date to = dividendList.get(0).getDate();
+        Date from = new Date();
+        Date to = new Date();
         for (DividendRaw d : dividendList) {
             if (d.getDate().before(from))
                 from = d.getDate();
