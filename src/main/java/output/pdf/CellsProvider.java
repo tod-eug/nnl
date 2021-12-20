@@ -1,8 +1,7 @@
 package output.pdf;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Phrase;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
@@ -12,14 +11,16 @@ public class CellsProvider {
      */
 
     public PdfPCell getRowDataCell(String content) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRow(content));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         return cell;
     }
 
     public PdfPCell getRowDataCellWithoutBorder(String content) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRow(content));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         cell.setBorder(0);
@@ -27,7 +28,8 @@ public class CellsProvider {
     }
 
     public PdfPCell getDividendHeaderCell(String content) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRowHeader(content));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorderWidth(2);
@@ -37,7 +39,8 @@ public class CellsProvider {
     }
 
     public PdfPCell getTradeHeaderCell(String content) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRowHeader(content));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
@@ -45,7 +48,8 @@ public class CellsProvider {
     }
 
     public PdfPCell getResultHeaderCell(String content, int colSpan) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRow(content));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         cell.setColspan(colSpan);
@@ -54,7 +58,8 @@ public class CellsProvider {
     }
 
     public PdfPCell getInstrumentHeaderCell(String content, int numberOfColumns) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRowHeader(content));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         cell.setBackgroundColor(new BaseColor(14, 71, 255));
@@ -63,7 +68,8 @@ public class CellsProvider {
     }
 
     public PdfPCell getTicketHeaderCell(String content, int numberOfColumns) {
-        PdfPCell cell = new PdfPCell(new Phrase(content));
+        PhraseProvider phraseProvider = new PhraseProvider();
+        PdfPCell cell = new PdfPCell(phraseProvider.getPhraseRowHeader(content));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         cell.setBackgroundColor(new BaseColor(110, 144, 255));

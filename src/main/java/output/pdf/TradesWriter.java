@@ -43,12 +43,13 @@ public class TradesWriter {
     private static final String finalTaxColumnName = "Sum tax to pay:";
     private static final String finalDeductionColumnName = "Sum deduction:";
 
-    public Document writeTrades(DocumentCalculated documentCalculated, Document document, Font font) {
+    public Document writeTrades(DocumentCalculated documentCalculated, Document document) {
 
         CellsProvider cellsProvider = new CellsProvider();
+        PhraseProvider phraseProvider = new PhraseProvider();
 
         document.newPage();
-        Chunk chunk = new Chunk("Tax calculation, Trades", font);
+        Phrase phrase = phraseProvider.getPhraseHeader("Tax calculation, Trades");
 
         PdfPTable table = new PdfPTable(new float[] { 1.3f, 1, 1, 1, 1, 1, 1, 1, 1 });
         table.setWidthPercentage(100);
@@ -73,12 +74,12 @@ public class TradesWriter {
 
                     if (purchases.size() > 0) {
                         for (TradeCalculated tc : purchases) {
-                            addRows(table, tc);
+                            addRows(table, tc, phraseProvider);
                         }
                     }
                     if (sells.size() > 0) {
                         for (TradeCalculated tc : sells) {
-                            addRows(table, tc);
+                            addRows(table, tc, phraseProvider);
                         }
                     }
                     cellsProvider.addEmptyRow(table, numberOfColumns);
@@ -92,7 +93,7 @@ public class TradesWriter {
         writeFinalResult(table, documentCalculated.getTradesTaxResult(), documentCalculated.getTradesDeductionResult());
 
         try {
-            document.add(chunk);
+            document.add(phrase);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
@@ -125,12 +126,12 @@ public class TradesWriter {
                 });
     }
 
-    private void addRows(PdfPTable table, TradeCalculated tc) {
+    private void addRows(PdfPTable table, TradeCalculated tc, PhraseProvider phraseProvider) {
         DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
         SimpleDateFormat dateFormat = new SimpleDateFormat(TPdfWriter.datePattern);
 
         CellsProvider cellsProvider = new CellsProvider();
-            table.addCell(dateFormat.format(tc.getDate()));
+            table.addCell(phraseProvider.getPhraseRow(dateFormat.format(tc.getDate())));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getQuantity())));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getTradePrice())));
             table.addCell(cellsProvider.getRowDataCell(df.format(tc.getSum())));

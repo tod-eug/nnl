@@ -29,9 +29,10 @@ public class InterestWriter {
     private static final String interestResultColumnName = "Sum received interest:";
 
 
-    public Document writeInterest(DocumentCalculated documentCalculated, Document document, Font font) {
+    public Document writeInterest(DocumentCalculated documentCalculated, Document document) {
 
-        Chunk chunk = new Chunk("Interest", font);
+        PhraseProvider phraseProvider = new PhraseProvider();
+        Phrase phrase = phraseProvider.getPhraseHeader("Interest");
 
         PdfPTable table = new PdfPTable(new float[] { 1, 3, 1, 1, 1 });
         table.setWidthPercentage(100);
@@ -39,12 +40,12 @@ public class InterestWriter {
 
         addTableHeader(table);
         table.setHeaderRows(1);
-        addRowsInterests(table, documentCalculated.getInterests());
+        addRowsInterests(table, documentCalculated.getInterests(), phraseProvider);
         addResult(table, interestResultColumnName, documentCalculated.getInterestsTaxResult());
 
         try {
             document.add(new Paragraph(20, "\u00a0"));
-            document.add(chunk);
+            document.add(phrase);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
@@ -62,14 +63,14 @@ public class InterestWriter {
                 });
     }
 
-    private void addRowsInterests(PdfPTable table, ArrayList<InterestCalculated> list) {
+    private void addRowsInterests(PdfPTable table, ArrayList<InterestCalculated> list, PhraseProvider phraseProvider) {
         DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
         SimpleDateFormat dateFormat = new SimpleDateFormat(TPdfWriter.datePattern);
 
         CellsProvider cellsProvider = new CellsProvider();
         for (InterestCalculated f : list) {
             table.addCell(cellsProvider.getRowDataCell(dateFormat.format(f.getDate())));
-            table.addCell(f.getDescription());
+            table.addCell(phraseProvider.getPhraseRow(f.getDescription()));
             table.addCell(cellsProvider.getRowDataCell(df.format(f.getAmount())));
             table.addCell(cellsProvider.getRowDataCell(df.format(f.getAmountRub())));
             table.addCell(cellsProvider.getRowDataCell(df.format(f.getTaxRub())));

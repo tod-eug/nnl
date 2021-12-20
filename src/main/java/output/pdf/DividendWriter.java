@@ -33,21 +33,21 @@ public class DividendWriter {
     private static final String exchangeRateColumnName = "Exchange rate";
     private static final String finalTaxColumnName = "Sum tax to pay:";
 
-    public Document writeDividends(DocumentCalculated documentCalculated, Document document, Font font) {
+    public Document writeDividends(DocumentCalculated documentCalculated, Document document) {
 
-
-        Chunk chunk = new Chunk("Tax calculation, Dividends", font);
+        PhraseProvider phraseProvider = new PhraseProvider();
+        Phrase phrase = phraseProvider.getPhraseHeader("Tax calculation, Dividends");
 
         PdfPTable table = new PdfPTable(new float[] { 1.5f, 1.3f, 1, 1, 1, 1, 1, 1, 1, 1 });
         table.setWidthPercentage(100);
         addTableHeader(table);
         table.setHeaderRows(1);
-        addRows(table, documentCalculated.getDividends());
+        addRows(table, documentCalculated.getDividends(), phraseProvider);
         addResult(table, documentCalculated.getDividendResult());
 
         try {
             document.add(new Paragraph(10, "\u00a0"));
-            document.add(chunk);
+            document.add(phrase);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
@@ -67,13 +67,13 @@ public class DividendWriter {
                 });
     }
 
-    private void addRows(PdfPTable table, ArrayList<DividendCalculated> list) {
+    private void addRows(PdfPTable table, ArrayList<DividendCalculated> list, PhraseProvider phraseProvider) {
         DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
         SimpleDateFormat dateFormat = new SimpleDateFormat(TPdfWriter.datePattern);
 
         CellsProvider cellsProvider = new CellsProvider();
         for (DividendCalculated d : list) {
-            table.addCell(d.getTicker());
+            table.addCell(phraseProvider.getPhraseRow(d.getTicker()));
             table.addCell(cellsProvider.getRowDataCell(dateFormat.format(d.getPaymentDate())));
             table.addCell(cellsProvider.getRowDataCell(df.format(d.getDividendGross())));
             table.addCell(cellsProvider.getRowDataCell(df.format(d.getDividendNet())));

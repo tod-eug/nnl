@@ -30,9 +30,10 @@ public class FeesTransactionsWriter {
     private static final String amountRubColumnName = "Amount Rub";
     private static final String resultColumnName = "Sum payed transactions fees:";
 
-    public Document writeFees(DocumentCalculated documentCalculated, Document document, Font font) {
+    public Document writeFees(DocumentCalculated documentCalculated, Document document) {
 
-        Chunk chunk = new Chunk("Transaction fees", font);
+        PhraseProvider phraseProvider = new PhraseProvider();
+        Phrase phrase = phraseProvider.getPhraseHeader("Transaction fees");
 
         PdfPTable table = new PdfPTable(new float[] { 1, 1.3f, 3, 1, 1, 1, 1 });
         table.setWidthPercentage(100);
@@ -40,12 +41,12 @@ public class FeesTransactionsWriter {
 
         addTableHeader(table);
         table.setHeaderRows(1);
-        addRows(table, documentCalculated.getFeesTransactions());
+        addRows(table, documentCalculated.getFeesTransactions(), phraseProvider);
         addResult(table, resultColumnName, documentCalculated.getFeesTransactionsResult());
 
         try {
             document.add(new Paragraph(20, "\u00a0"));
-            document.add(chunk);
+            document.add(phrase);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
@@ -64,15 +65,15 @@ public class FeesTransactionsWriter {
                 });
     }
 
-    private void addRows(PdfPTable table, ArrayList<FeesTransactionsCalculated> list) {
+    private void addRows(PdfPTable table, ArrayList<FeesTransactionsCalculated> list, PhraseProvider phraseProvider) {
         DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
         SimpleDateFormat dateFormat = new SimpleDateFormat(TPdfWriter.datePattern);
 
         CellsProvider cellsProvider = new CellsProvider();
         for (FeesTransactionsCalculated ft : list) {
-            table.addCell(ft.getTicker());
+            table.addCell(phraseProvider.getPhraseRow(ft.getTicker()));
             table.addCell(cellsProvider.getRowDataCell(dateFormat.format(ft.getDate())));
-            table.addCell(ft.getDescription());
+            table.addCell(phraseProvider.getPhraseRow(ft.getDescription()));
             table.addCell(cellsProvider.getRowDataCell(df.format(ft.getQuantity())));
             table.addCell(cellsProvider.getRowDataCell(df.format(ft.getTradePrice())));
             table.addCell(cellsProvider.getRowDataCell(df.format(ft.getAmount())));

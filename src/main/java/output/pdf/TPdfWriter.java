@@ -39,18 +39,17 @@ public class TPdfWriter {
 
         document.setPageSize(PageSize.A4.rotate());
         document.open();
-        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        document = summaryWriter.writeSummary(documentCalculated, document, font);
+        document = summaryWriter.writeSummary(documentCalculated, document);
         if (documentCalculated.getDividends().size() > 0)
-            document = dividendWriter.writeDividends(documentCalculated, document, font);
+            document = dividendWriter.writeDividends(documentCalculated, document);
         if (documentCalculated.getTrades().size() > 0)
-            document = tradesWriter.writeTrades(documentCalculated, document, font);
+            document = tradesWriter.writeTrades(documentCalculated, document);
         if (documentCalculated.getInterests().size() > 0)
-            document = interestWriter.writeInterest(documentCalculated, document, font);
+            document = interestWriter.writeInterest(documentCalculated, document);
         if (documentCalculated.getFees().size() > 0)
-            document = feesWriter.writeFees(documentCalculated, document, font);
+            document = feesWriter.writeFees(documentCalculated, document);
         if (documentCalculated.getFeesTransactions().size() > 0)
-            document = feesTransactionsWriter.writeFees(documentCalculated, document, font);
+            document = feesTransactionsWriter.writeFees(documentCalculated, document);
         document.close();
         return file;
     }

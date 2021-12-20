@@ -27,9 +27,10 @@ public class FeesWriter {
     private static final String amountRubColumnName = "Amount Rub";
     private static final String feesResultColumnName = "Sum payed fees:";
 
-    public Document writeFees(DocumentCalculated documentCalculated, Document document, Font font) {
+    public Document writeFees(DocumentCalculated documentCalculated, Document document) {
 
-        Chunk chunk = new Chunk("Fees", font);
+        PhraseProvider phraseProvider = new PhraseProvider();
+        Phrase phrase = phraseProvider.getPhraseHeader("Fees");
 
         PdfPTable table = new PdfPTable(new float[] { 1, 3, 1, 1 });
         table.setWidthPercentage(100);
@@ -37,12 +38,12 @@ public class FeesWriter {
 
         addTableHeader(table);
         table.setHeaderRows(1);
-        addRowsFees(table, documentCalculated.getFees());
+        addRowsFees(table, documentCalculated.getFees(), phraseProvider);
         addResult(table, feesResultColumnName, documentCalculated.getFeesResult());
 
         try {
             document.add(new Paragraph(20, "\u00a0"));
-            document.add(chunk);
+            document.add(phrase);
             document.add(new Paragraph(10, "\u00a0"));
             document.add(table);
         } catch (DocumentException e) {
@@ -60,14 +61,14 @@ public class FeesWriter {
                 });
     }
 
-    private void addRowsFees(PdfPTable table, ArrayList<FeesCalculated> list) {
+    private void addRowsFees(PdfPTable table, ArrayList<FeesCalculated> list, PhraseProvider phraseProvider) {
         DecimalFormat df = new DecimalFormat(TPdfWriter.doubleFormatPattern);
         SimpleDateFormat dateFormat = new SimpleDateFormat(TPdfWriter.datePattern);
 
         CellsProvider cellsProvider = new CellsProvider();
         for (FeesCalculated f : list) {
             table.addCell(cellsProvider.getRowDataCell(dateFormat.format(f.getDate())));
-            table.addCell(f.getDescription());
+            table.addCell(phraseProvider.getPhraseRow(f.getDescription()));
             table.addCell(cellsProvider.getRowDataCell(df.format(f.getAmount())));
             table.addCell(cellsProvider.getRowDataCell(df.format(f.getAmountRub())));
         }
